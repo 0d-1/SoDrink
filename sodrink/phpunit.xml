@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit bootstrap="tests/bootstrap.php" colors="true" stopOnFailure="false">
     <testsuites>
-        <testsuite name="SoDrink Domain Tests">
+        <testsuite name="SoDrink Test Suite">
             <directory>tests/Domain</directory>
+            <directory>tests/Security</directory>
         </testsuite>
     </testsuites>
 </phpunit>

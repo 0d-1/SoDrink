@@ -5,6 +5,8 @@ const $ = (s, el=document)=> el.querySelector(s);
 const container = document.querySelector('.login-page .container-ui');
 const loginLink    = document.querySelector('.SignInLink');
 const registerLink = document.querySelector('.SignUpLink');
+const baseUrl = window.SODRINK_BASE || '';
+const homeUrl = (baseUrl && baseUrl !== '/') ? `${baseUrl}/` : '/';
 
 registerLink?.addEventListener('click', (e)=>{ e.preventDefault(); container?.classList.add('active'); });
 loginLink?.addEventListener('click', (e)=>{ e.preventDefault(); container?.classList.remove('active'); });
@@ -16,6 +18,13 @@ const loginBtn    = $('#login-submit');
 const pseudoInput = $('#login-pseudo');
 const passInput   = $('#login-password');
 const rememberCb  = $('#login-remember');
+const googleLoginBtn    = $('#login-google');
+
+const initialLoginMessage = loginError?.dataset?.initialMessage;
+if (initialLoginMessage) {
+  loginError.hidden = false;
+  loginError.textContent = initialLoginMessage;
+}
 
 function setLoginSubmitting(on){
   loginBtn?.toggleAttribute('disabled', on);
@@ -45,7 +54,7 @@ formLogin?.addEventListener('submit', async (e)=>{
   try{
     await API.post('/api/auth/login.php', { pseudo, password, remember: remember ? 1 : 0 });
     sessionStorage.setItem('just_logged_in','1');
-    location.href = `${window.SODRINK_BASE || ''}/`;
+    location.href = homeUrl;
   }catch(err){
     showLoginError(err?.message || 'Identifiants incorrects');
     setLoginSubmitting(false);
@@ -64,6 +73,12 @@ const regPrenom = $('#reg-prenom');
 const regNom    = $('#reg-nom');
 const regPass   = $('#reg-password');
 const regInsta  = $('#reg-instagram');
+const googleRegisterBtn = $('#register-google');
+
+const initialRegisterMessage = regErr?.dataset?.initialMessage;
+if (initialRegisterMessage) {
+  showRegError(initialRegisterMessage);
+}
 
 function setRegSubmitting(on){
   regBtn?.toggleAttribute('disabled', on);
@@ -96,9 +111,27 @@ formReg?.addEventListener('submit', async (e)=>{
     await API.post('/api/auth/register.php', payload);
     showRegOk(true);
     // L’utilisateur est connecté automatiquement par l’API d’inscription
-    setTimeout(()=> { location.href = `${window.SODRINK_BASE || ''}/`; }, 650);
+    setTimeout(()=> { location.href = homeUrl; }, 650);
   }catch(err){
     showRegError(err?.message || 'Erreur lors de la création du compte.');
     setRegSubmitting(false);
   }
+});
+
+function buildGoogleUrl(params){
+  const search = new URLSearchParams(params);
+  const query = search.toString();
+  const base = (baseUrl && baseUrl !== '/') ? baseUrl : '';
+  const path = `${base}/auth/google.php`;
+  return query ? `${path}?${query}` : path;
+}
+
+googleLoginBtn?.addEventListener('click', ()=>{
+  const params = { mode: 'login' };
+  if (rememberCb?.checked) params.remember = '1';
+  location.href = buildGoogleUrl(params);
+});
+
+googleRegisterBtn?.addEventListener('click', ()=>{
+  location.href = buildGoogleUrl({ mode: 'register' });
 });

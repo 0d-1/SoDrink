@@ -43,6 +43,8 @@ Au premier lancement, le bootstrap crée automatiquement les répertoires `data/
 ## Configuration
 Les variables d'environnement peuvent être définies via un fichier `sodrink/config/.env` (optionnel). Les clés supportées incluent `APP_ENV`, `APP_TZ` et `MAX_UPLOAD_MB`; elles surchargent les constantes par défaut définies dans `src/config.php`.【F:sodrink/src/config.php†L7-L59】
 
+- **Connexion Google** : définissez `GOOGLE_CLIENT_ID` et `GOOGLE_CLIENT_SECRET` (et éventuellement `GOOGLE_REDIRECT_URI`) pour activer les boutons "Continuer avec Google" sur la page de connexion. Sans ces variables, l'option ne s'affiche pas.【F:sodrink/src/security/google.php†L12-L61】【F:sodrink/public/login.php†L9-L93】
+
 ## Lancement en développement
 Pour tester l'application en local, utilisez le serveur PHP intégré :
 ```bash

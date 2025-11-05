@@ -60,6 +60,12 @@ function logout_user(): void {
 const REMEMBER_COOKIE = 'sdrk_remember';
 const REMEMBER_DAYS   = 14;
 
+/** Calcul du timestamp d'expiration pour le cookie remember */
+function remember_cookie_expiration_time(?int $now = null): int {
+    $now = $now ?? time();
+    return $now + REMEMBER_DAYS * 24 * 3600;
+}
+
 /** Options de cookie cohérentes avec l'app en sous-dossier */
 function remember_cookie_options(int $expires): array {
     $params = session_get_cookie_params();
@@ -80,7 +86,7 @@ function issue_remember_cookie(int $userId): void {
     $selector  = bin2hex(random_bytes(9));   // 18 hex chars
     $validator = bin2hex(random_bytes(32));  // 64 hex chars
     $hash      = hash('sha256', $validator);
-    $expiresTs = time() + REMEMBER_DAYS * 24 * 3600;
+    $expiresTs = remember_cookie_expiration_time();
 
     $repo = new Users();
     $user = $repo->getById($userId);
