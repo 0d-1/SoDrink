@@ -119,6 +119,52 @@ include __DIR__ . '/../views/partials/head.php';
       <div class="preview-meta" id="preview-meta"></div>
       <div class="preview-links" id="preview-links"></div>
     </section>
+    <section class="card profile-card profile-notif-card" id="profile-notifications">
+      <h2>Paramètres & notifications</h2>
+      <p class="muted">Choisis les alertes que tu veux recevoir depuis SoDrink.</p>
+      <form id="form-notifications" class="form notif-form">
+        <div class="notif-grid">
+          <label class="notif-option">
+            <input type="checkbox" data-setting="messages">
+            <div>
+              <strong>Messages privés</strong>
+              <p class="muted">Alerte quand quelqu’un t’écrit dans la messagerie.</p>
+            </div>
+          </label>
+          <label class="notif-option">
+            <input type="checkbox" data-setting="events">
+            <div>
+              <strong>Événements</strong>
+              <p class="muted">Confirmation, modifications et nouveaux participants à tes soirées.</p>
+            </div>
+          </label>
+          <label class="notif-option">
+            <input type="checkbox" data-setting="gallery">
+            <div>
+              <strong>Galerie photo</strong>
+              <p class="muted">Commentaires, likes et mises à jour sur tes photos.</p>
+            </div>
+          </label>
+          <label class="notif-option">
+            <input type="checkbox" data-setting="torpille">
+            <div>
+              <strong>Torpille</strong>
+              <p class="muted">Être averti quand la torpille passe entre les mains des amis.</p>
+            </div>
+          </label>
+          <label class="notif-option">
+            <input type="checkbox" data-setting="announcements">
+            <div>
+              <strong>Annonces</strong>
+              <p class="muted">Messages importants envoyés par les admins.</p>
+            </div>
+          </label>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Enregistrer mes préférences</button>
+        </div>
+      </form>
+    </section>
   </div>
 </main>
 <?php include __DIR__ . '/../views/partials/footer.php'; ?>

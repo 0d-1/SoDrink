@@ -60,6 +60,7 @@ class Users
             'banner'          => $u['banner'] ?? null,
             'created_at'      => date('c'),
             'remember_tokens' => [],
+            'notification_settings' => NotificationPreferences::defaults(),
         ];
         return $this->store->append($rec);
     }
@@ -72,7 +73,7 @@ class Users
 
         foreach ([
             'pseudo','prenom','nom','instagram','bio','website','location','relationship_status','links',
-            'pass_hash','role','avatar','banner','remember_tokens','email','google_id','auth_provider'
+            'pass_hash','role','avatar','banner','remember_tokens','email','google_id','auth_provider','notification_settings'
         ] as $k) {
             if (array_key_exists($k, $fields)) $cur[$k] = $fields[$k];
         }

@@ -8,15 +8,25 @@ use SoDrink\Storage\JsonStore;
 class Notifications
 {
     private JsonStore $store;
+    private Users $users;
 
-    public function __construct(?string $file = null)
+    public function __construct(?string $file = null, ?Users $users = null)
     {
         $file = $file ?: (realpath(__DIR__ . '/..') . '/../data/notifications.json');
         $this->store = new JsonStore($file);
+        $this->users = $users ?? new Users();
     }
 
-    public function send(int $userId, string $type, string $message, string $link = ''): array
+    public function send(int $userId, string $type, string $message, string $link = ''): ?array
     {
+        $user = $this->users->getById($userId);
+        if (!$user) {
+            return null;
+        }
+        if (!NotificationPreferences::userAllows($user, $type)) {
+            return null;
+        }
+
         $rec = [
             'user_id'    => $userId,
             'type'       => $type,

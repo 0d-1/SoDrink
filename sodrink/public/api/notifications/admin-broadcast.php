@@ -68,8 +68,9 @@ $repo = new Notifications();
 $sent = 0;
 foreach ($ids as $uid) {
     // <- $link est une string (éventuellement ''), plus de null
-    $repo->send($uid, 'admin_broadcast', $message, $link);
-    $sent++;
+    if ($repo->send($uid, 'admin_broadcast', $message, $link)) {
+        $sent++;
+    }
 }
 
 json_success(['sent' => $sent]);
