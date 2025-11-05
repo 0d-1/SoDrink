@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../_bootstrap.php';
 require_once $GLOBALS['SODRINK_ROOT'] . '/src/domain/Conversations.php';
+require_once $GLOBALS['SODRINK_ROOT'] . '/src/domain/Notifications.php';
 
 use SoDrink\Domain\Conversations;
 use SoDrink\Domain\Users;
+use SoDrink\Domain\Notifications;
 use function SoDrink\Security\require_csrf;
 use function SoDrink\Security\require_login;
 
@@ -106,6 +108,22 @@ if ($method === 'POST') {
     $sender = $userRepo->getById($meId);
     if ($sender) {
         $message['sender'] = Users::toPublic($sender);
+    }
+    $participantIds = array_map('intval', $conv['participants'] ?? []);
+    $participantIds = array_values(array_unique($participantIds));
+    $senderPseudo = $sender['pseudo'] ?? "Quelqu'un";
+    $link = WEB_BASE . '/chat.php?conversation=' . $conversationId;
+    $notifier = new Notifications();
+    foreach ($participantIds as $participantId) {
+        if ($participantId === $meId) {
+            continue;
+        }
+        $notifier->send(
+            $participantId,
+            'chat_message',
+            sprintf("%s t'a envoyé un message.", $senderPseudo),
+            $link
+        );
     }
     json_success([
         'message'      => $hydrateMessage($message),

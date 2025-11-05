@@ -18,6 +18,8 @@ let currentBanner = null;
 let savedBanner = null;
 let currentAvatar = null;
 
+const NOTIF_KEYS = ['messages', 'events', 'gallery', 'torpille', 'announcements'];
+
 const relationshipLabels = {
   single: 'Célibataire',
   relationship: 'En couple',
@@ -71,6 +73,30 @@ function renderLinks(links = []) {
     container.appendChild(createLinkRow(link));
   });
   updateAddLinkState();
+}
+
+function applyNotificationSettings(settings = {}) {
+  const form = $('#form-notifications');
+  if (!form) return;
+  NOTIF_KEYS.forEach((key) => {
+    const input = form.querySelector(`input[data-setting="${key}"]`);
+    if (input) {
+      input.checked = Boolean(settings[key]);
+    }
+  });
+}
+
+function collectNotificationSettingsForSubmit() {
+  const form = $('#form-notifications');
+  const result = {};
+  if (!form) return result;
+  NOTIF_KEYS.forEach((key) => {
+    const input = form.querySelector(`input[data-setting="${key}"]`);
+    if (input) {
+      result[key] = Boolean(input.checked);
+    }
+  });
+  return result;
 }
 
 function collectLinksForSubmit() {
@@ -205,6 +231,7 @@ async function loadMe() {
       form.bio.value = user.bio || '';
     }
     renderLinks(user.links || []);
+    applyNotificationSettings(user.notification_settings || {});
     const banner = $('#profile-banner');
     if (banner) {
       banner.style.backgroundImage = currentBanner ? `url(${currentBanner})` : '';
@@ -354,6 +381,24 @@ function bindAddLink() {
   });
 }
 
+function bindNotificationsForm() {
+  const form = $('#form-notifications');
+  if (!form) return;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try {
+      const { user } = await API.put('/api/users/me.php', {
+        notification_settings: collectNotificationSettingsForSubmit(),
+      });
+      currentUser = user;
+      applyNotificationSettings(user.notification_settings || {});
+      alert('Préférences mises à jour');
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   renderLinks([]);
   loadMe();
@@ -361,4 +406,5 @@ window.addEventListener('DOMContentLoaded', () => {
   bindAvatar();
   bindBanner();
   bindAddLink();
+  bindNotificationsForm();
 });

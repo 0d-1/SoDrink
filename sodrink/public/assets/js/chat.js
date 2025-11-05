@@ -3,6 +3,7 @@ import API from './api.js';
 
 const BASE = window.SODRINK_BASE || '';
 const ME = window.SODRINK_ME || {};
+const CURRENT_URL = new URL(window.location.href);
 
 function $(sel, scope = document) { return scope.querySelector(sel); }
 function $all(sel, scope = document) { return Array.from(scope.querySelectorAll(sel)); }
@@ -14,7 +15,9 @@ let activeConversation = null;
 let messages = [];
 let pollTimer = null;
 let fetchingMessages = false;
-let pendingTargetPseudo = (new URL(location.href)).searchParams.get('u') || (new URL(location.href)).searchParams.get('user') || '';
+let pendingTargetPseudo = CURRENT_URL.searchParams.get('u') || CURRENT_URL.searchParams.get('user') || '';
+let pendingConversationId = parseInt(CURRENT_URL.searchParams.get('conversation') || '', 10);
+if (Number.isNaN(pendingConversationId)) pendingConversationId = null;
 let initialTargetChecked = false;
 
 const relationshipLabels = {
@@ -107,13 +110,19 @@ async function loadConversations() {
     const { conversations: list } = await API.get('/api/chat/conversations.php');
     conversations = list;
     renderConversationList();
-    if (pendingTargetPseudo && !initialTargetChecked) {
-      initialTargetChecked = true;
-      const match = conversations.find((conv) => (conv.participants || []).some((p) => p.pseudo?.toLowerCase() === pendingTargetPseudo.toLowerCase()));
-      if (match) {
-        openConversation(match.id);
-      } else {
-        preselectFromPseudo(pendingTargetPseudo);
+    if (!initialTargetChecked) {
+      if (pendingConversationId && conversations.some((conv) => conv.id === pendingConversationId)) {
+        initialTargetChecked = true;
+        openConversation(pendingConversationId);
+        pendingConversationId = null;
+      } else if (pendingTargetPseudo) {
+        initialTargetChecked = true;
+        const match = conversations.find((conv) => (conv.participants || []).some((p) => p.pseudo?.toLowerCase() === pendingTargetPseudo.toLowerCase()));
+        if (match) {
+          openConversation(match.id);
+        } else {
+          preselectFromPseudo(pendingTargetPseudo);
+        }
       }
     }
   } catch (err) {

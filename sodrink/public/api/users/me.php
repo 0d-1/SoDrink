@@ -3,8 +3,10 @@ declare(strict_types=1);
 require_once __DIR__ . '/../_bootstrap.php';
 
 require_once $GLOBALS['SODRINK_ROOT'] . '/src/domain/Users.php';
+require_once $GLOBALS['SODRINK_ROOT'] . '/src/domain/NotificationPreferences.php';
 
 use SoDrink\Domain\Users;
+use SoDrink\Domain\NotificationPreferences;
 use function SoDrink\Security\require_login;
 use function SoDrink\Security\require_csrf;
 use function SoDrink\Security\safe_multiline;
@@ -21,7 +23,9 @@ if ($method === 'GET') {
     $repo = new Users();
     $me = $repo->getById((int)($_SESSION['user_id'] ?? 0));
     if (!$me) json_error('Utilisateur introuvable', 404);
-    json_success(['user' => Users::toPublic($me)]);
+    $user = Users::toPublic($me);
+    $user['notification_settings'] = NotificationPreferences::normalize($me['notification_settings'] ?? null);
+    json_success(['user' => $user]);
 }
 
 if ($method === 'PUT') {
@@ -132,11 +136,20 @@ if ($method === 'PUT') {
         $fields['pass_hash'] = password_hash($new, PASSWORD_DEFAULT);
     }
 
+    if (array_key_exists('notification_settings', $data)) {
+        if (!is_array($data['notification_settings'])) {
+            json_error('Paramètres de notification invalides', 422);
+        }
+        $fields['notification_settings'] = NotificationPreferences::normalize($data['notification_settings']);
+    }
+
     if (!$fields) json_error('Aucun champ à mettre à jour', 400);
 
     $repo->update($meId, $fields);
     $updated = $repo->getById($meId);
-    json_success(['user' => Users::toPublic($updated)]);
+    $user = Users::toPublic($updated);
+    $user['notification_settings'] = NotificationPreferences::normalize($updated['notification_settings'] ?? null);
+    json_success(['user' => $user]);
 }
 
 http_response_code(405);

@@ -415,6 +415,17 @@ main.container{padding:1.25rem 0 2rem}
 
 .form-actions{display:flex; justify-content:flex-end;}
 
+.profile-notif-card .notif-grid{display:grid; gap:.75rem;}
+.profile-notif-card .notif-option{display:flex; gap:.75rem; align-items:flex-start; padding:.75rem; border-radius:12px; border:1px solid rgba(148,163,184,.22); background:rgba(15,23,42,.55);}
+.profile-notif-card .notif-option input{margin-top:.35rem;}
+.profile-notif-card .notif-option strong{display:block; margin:0 0 .2rem;}
+.profile-notif-card .notif-option .muted{margin:0;}
+.profile-notif-card .form-actions{margin-top:1rem;}
+@media (max-width:700px){
+  .profile-notif-card .notif-option{flex-direction:column; align-items:flex-start;}
+  .profile-notif-card .notif-option input{margin-top:0;}
+}
+
 .preview-banner{height:140px; border-radius:16px; background:linear-gradient(135deg,#1e293b,#0b1220); background-size:cover; background-position:center;}
 .preview-body{display:flex; align-items:center; gap:1rem;}
 .avatar-lg{width:90px; height:90px; border-radius:50%; object-fit:cover; border:3px solid rgba(11,18,32,.9); box-shadow:0 10px 30px rgba(0,0,0,.45); background:#0b1220;}
