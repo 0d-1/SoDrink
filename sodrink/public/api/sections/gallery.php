@@ -24,28 +24,106 @@ if ($method === 'GET') {
     $page = max(1, (int)($_GET['page'] ?? 1));
     $per  = max(1, min(36, (int)($_GET['per'] ?? 12)));
     $authorFilter = (int)($_GET['author_id'] ?? 0);
+    $sort = (string)($_GET['sort'] ?? 'recent');
+    $searchRaw = trim((string)($_GET['q'] ?? ''));
     $meId = (int)($_SESSION['user_id'] ?? 0);
 
-    $all = array_reverse($repo->all());
-    if ($authorFilter > 0) $all = array_values(array_filter($all, fn($g) => (int)($g['author_id'] ?? 0) === $authorFilter));
+    $sort = in_array($sort, ['recent', 'popular', 'commented'], true) ? $sort : 'recent';
+    $search = $searchRaw !== '' ? mb_strtolower($searchRaw) : '';
 
-    foreach ($all as &$g) {
-        $au = $users->getById((int)($g['author_id'] ?? 0));
-        $g['author'] = $au ? ['id'=>(int)$au['id'],'pseudo'=>$au['pseudo'],'avatar'=>$au['avatar']??null] : null;
-        $likes = $g['likes'] ?? [];
-        $comms = $g['comments'] ?? [];
-        $g['likes_count'] = count($likes);
-        $g['liked_by_me'] = $meId ? in_array($meId, array_map('intval',$likes), true) : false;
-        $g['comments_count'] = count($comms);
-        // Aperçu 2 derniers commentaires
-        $preview = array_slice($comms, -2);
-        foreach ($preview as &$c) { $u = $users->getById((int)$c['user_id']); $c['pseudo'] = $u['pseudo'] ?? '—'; $c['avatar'] = $u['avatar'] ?? null; }
-        $g['comments_preview'] = $preview;
+    $all = $repo->all();
+
+    $userCache = [];
+    $getUser = static function (int $id) use (&$userCache, $users): ?array {
+        if ($id <= 0) {
+            return null;
+        }
+        if (!array_key_exists($id, $userCache)) {
+            $userCache[$id] = $users->getById($id) ?: null;
+        }
+        return $userCache[$id];
+    };
+
+    $enriched = array_map(static function (array $g) use ($getUser, $meId): array {
+        $likes = array_map('intval', $g['likes'] ?? []);
+        $comments = $g['comments'] ?? [];
+
+        $preview = array_slice($comments, -2);
+        foreach ($preview as &$c) {
+            $u = $getUser((int)($c['user_id'] ?? 0));
+            $c['pseudo'] = $u['pseudo'] ?? '—';
+            $c['avatar'] = $u['avatar'] ?? null;
+        }
+        unset($c);
+
+        $author = $getUser((int)($g['author_id'] ?? 0));
+
+        $createdAt = isset($g['created_at']) ? strtotime((string)$g['created_at']) ?: 0 : 0;
+
+        return array_merge($g, [
+            'author' => $author ? ['id' => (int)$author['id'], 'pseudo' => (string)$author['pseudo'], 'avatar' => $author['avatar'] ?? null] : null,
+            'likes_count' => count($likes),
+            'liked_by_me' => $meId ? in_array($meId, $likes, true) : false,
+            'comments_count' => count($comments),
+            'comments_preview' => $preview,
+            '_created_ts' => $createdAt,
+        ]);
+    }, $all);
+
+    if ($authorFilter > 0) {
+        $enriched = array_values(array_filter($enriched, static fn($g) => (int)($g['author']['id'] ?? 0) === $authorFilter));
     }
 
-    $total = count($all);
-    $slice = array_slice($all, ($page-1)*$per, $per);
-    json_success(['items' => $slice, 'page' => $page, 'per' => $per, 'total' => $total]);
+    if ($search !== '') {
+        $enriched = array_values(array_filter($enriched, static function ($g) use ($search): bool {
+            $fields = [
+                mb_strtolower((string)($g['title'] ?? '')),
+                mb_strtolower((string)($g['description'] ?? '')),
+                mb_strtolower((string)($g['author']['pseudo'] ?? '')),
+            ];
+            foreach ($fields as $text) {
+                if ($text !== '' && mb_strpos($text, $search) !== false) {
+                    return true;
+                }
+            }
+            return false;
+        }));
+    }
+
+    $sortBy = static function (array $g, string $key): int {
+        return (int)($g[$key] ?? 0);
+    };
+
+    usort($enriched, static function ($a, $b) use ($sort, $sortBy): int {
+        $cmp = 0;
+        if ($sort === 'popular') {
+            $cmp = $sortBy($b, 'likes_count') <=> $sortBy($a, 'likes_count');
+        } elseif ($sort === 'commented') {
+            $cmp = $sortBy($b, 'comments_count') <=> $sortBy($a, 'comments_count');
+        }
+
+        if ($cmp === 0) {
+            $cmp = ($b['_created_ts'] ?? 0) <=> ($a['_created_ts'] ?? 0);
+        }
+
+        return $cmp;
+    });
+
+    $total = count($enriched);
+    $slice = array_slice($enriched, ($page - 1) * $per, $per);
+
+    // Nettoyage des clés internes
+    $slice = array_map(static function ($g) {
+        unset($g['_created_ts']);
+        return $g;
+    }, $slice);
+
+    json_success([
+        'items' => $slice,
+        'page' => $page,
+        'per' => $per,
+        'total' => $total,
+    ]);
 }
 
 if ($method === 'POST') {

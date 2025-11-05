@@ -135,22 +135,148 @@ main.container{padding:1.25rem 0 2rem}
 .suggest-item img{width:28px; height:28px; border-radius:50%; object-fit:cover}
 
 /* --------- Galerie --------- */
+.gallery-toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.75rem;
+  align-items:center;
+  margin-bottom:1rem;
+}
+.gallery-toolbar .toolbar-search{
+  position:relative;
+  flex:1 1 240px;
+  display:block;
+}
+.gallery-toolbar .toolbar-search input{
+  width:100%;
+  padding-left:2.4rem;
+}
+.toolbar-icon{
+  position:absolute;
+  inset:0 auto 0 .85rem;
+  display:flex;
+  align-items:center;
+  color:var(--muted);
+  pointer-events:none;
+  font-size:1rem;
+}
+.gallery-toolbar .toolbar-group{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem;
+  align-items:center;
+}
+.gallery-toolbar select{min-width:150px}
+.gallery-toolbar .toolbar-toggle{
+  display:flex;
+  align-items:center;
+  gap:.4rem;
+  font-weight:500;
+  color:var(--muted);
+}
+.gallery-toolbar .toolbar-toggle input{width:auto; margin:0; accent-color:var(--blue-400)}
+.gallery-toolbar .toolbar-toggle label{
+  display:inline-flex;
+  align-items:center;
+  gap:.4rem;
+  margin:0;
+  font-weight:500;
+  color:inherit;
+}
+.gallery-toolbar .toolbar-toggle.is-disabled{opacity:.55; cursor:not-allowed}
+.gallery-toolbar .toolbar-toggle.is-disabled label{cursor:not-allowed}
+.gallery-toolbar .toolbar-views{
+  display:inline-flex;
+  gap:.4rem;
+}
+
+.gallery-status{
+  margin-bottom:.75rem;
+  padding:.55rem .85rem;
+  border-radius:12px;
+  background:rgba(148,163,184,.08);
+  color:var(--muted);
+}
+.gallery-status[data-type="error"]{background:rgba(220,38,38,.18);color:#fecaca}
+.gallery-status[data-type="empty"]{background:rgba(37,99,235,.1);color:var(--blue-200)}
+
 .gallery-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(360px,1fr)); /* grandes cartes */
-  gap:1rem;
+  grid-template-columns:repeat(auto-fill, minmax(260px,1fr));
+  gap:1.25rem;
+}
+.gallery-grid[data-view="list"]{
+  grid-template-columns:repeat(auto-fill, minmax(420px,1fr));
 }
 .photo-card{
-  overflow:hidden; border-radius:14px; border:1px solid var(--border);
+  overflow:hidden;
+  border-radius:18px;
+  border:1px solid var(--border);
   background:#0b1220;
+  display:flex;
+  flex-direction:column;
+  transition:transform .2s ease, box-shadow .2s ease;
 }
-.photo-card img{width:100%; aspect-ratio:4/3; object-fit:cover; display:block}
+.photo-card:hover{transform:translateY(-2px); box-shadow:0 12px 32px rgba(15,23,42,.35)}
+.photo-card img{width:100%; aspect-ratio:3/2; object-fit:cover; display:block}
 .photo-card-lg img{aspect-ratio:3/2}
-.photo-card figcaption{padding:.75rem}
+.photo-card figcaption{padding:1rem; display:flex; flex-direction:column; gap:.6rem}
+.gallery-grid[data-view="list"] .photo-card{display:grid; grid-template-columns:minmax(180px,220px) 1fr; align-items:stretch}
+.gallery-grid[data-view="list"] .photo-card img{height:100%; object-fit:cover}
+.gallery-grid[data-view="list"] .photo-card figcaption{padding:1.25rem; gap:.75rem}
 .grid-row{display:flex; justify-content:space-between; gap:1rem; align-items:flex-start}
 .author{white-space:nowrap}
 .author-link{color:var(--blue-300); text-decoration:none}
 .author-link:hover{color:var(--blue-200); text-decoration:underline}
+.photo-card .title{font-size:1.05rem}
+.photo-card .desc{color:var(--muted); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+.photo-card .inline{display:flex; flex-wrap:wrap; gap:.5rem}
+.photo-card .comments{margin-top:.6rem; border-top:1px solid var(--border); padding-top:.6rem; display:grid; gap:.5rem}
+.photo-card .comments-list{display:grid; gap:.4rem; max-height:220px; overflow:auto; padding-right:.25rem}
+.photo-card .comment-line{display:flex; gap:.6rem; align-items:flex-start; font-size:.95rem}
+.photo-card .comment-line img{width:32px; height:32px; border-radius:50%; object-fit:cover}
+.photo-card .admin-actions{display:flex; gap:.5rem; margin-top:.5rem}
+.gallery-grid.is-empty{display:grid; place-items:center; min-height:180px; text-align:center}
+.gallery-empty{display:grid; gap:.5rem; justify-items:center; color:var(--muted)}
+.gallery-empty strong{color:#fff; font-size:1.05rem}
+
+.photo-card.is-skeleton{position:relative; min-height:260px; border-color:rgba(148,163,184,.12)}
+.photo-card.is-skeleton::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(120deg, transparent 0%, rgba(148,163,184,.18) 50%, transparent 100%);
+  animation:gallery-shine 1.5s infinite;
+}
+.photo-card.is-skeleton img,
+.photo-card.is-skeleton .skeleton-img,
+.photo-card.is-skeleton .skeleton-line{background:rgba(148,163,184,.12); border-radius:12px; min-height:120px}
+.photo-card.is-skeleton .skeleton-line{min-height:16px}
+.skeleton-line{height:16px; width:100%; background:rgba(148,163,184,.12); border-radius:10px}
+.photo-card.is-skeleton figcaption{opacity:0}
+
+@keyframes gallery-shine{
+  from{transform:translateX(-100%)}
+  to{transform:translateX(100%)}
+}
+
+.btn-ghost{background:transparent; border-color:transparent; color:var(--muted)}
+.btn-ghost:hover{background:rgba(148,163,184,.12); color:#fff; transform:none}
+.btn-ghost.is-active,.btn-ghost[aria-pressed="true"]{background:rgba(59,130,246,.25); color:#e0e7ff}
+.btn-pill{border-radius:999px}
+.btn-like{display:inline-flex; align-items:center; gap:.35rem}
+.btn-like.is-active{background:rgba(248,113,113,.18); color:#fecaca; border-color:transparent}
+.btn-like .icon{font-size:1rem}
+
+.pagination[hidden]{display:none}
+.pagination .btn{min-width:44px; justify-content:center}
+.pagination .btn[disabled]{opacity:.6; cursor:not-allowed}
+.pagination .ellipsis{display:flex; align-items:center; padding:0 .25rem; color:var(--muted)}
+
+@media (max-width:720px){
+  .gallery-toolbar{flex-direction:column; align-items:stretch}
+  .gallery-toolbar .toolbar-group{width:100%; justify-content:space-between}
+  .gallery-grid[data-view="list"]{grid-template-columns:1fr}
+  .gallery-grid[data-view="list"] .photo-card{grid-template-columns:1fr}
+}
 
 /* Edition galerie (admin/auteur) */
 .admin-actions{display:flex; gap:.5rem; margin-top:.5rem}
