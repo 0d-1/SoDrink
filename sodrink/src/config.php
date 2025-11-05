@@ -35,6 +35,7 @@ const PUBLIC_PATH  = BASE_PATH . '/public';
 const DATA_PATH    = BASE_PATH . '/data';
 const UPLOADS_PATH = PUBLIC_PATH . '/uploads';
 const AVATARS_PATH = UPLOADS_PATH . '/avatars';
+const BANNERS_PATH = UPLOADS_PATH . '/banners';
 const GALLERY_PATH = UPLOADS_PATH . '/gallery';
 
 // App

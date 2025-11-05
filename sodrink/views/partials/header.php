@@ -50,6 +50,7 @@ $avatar = $_SESSION['avatar'] ?? (WEB_BASE . '/assets/img/ui/avatar-default.svg'
       <a class="btn btn-outline" href="<?= WEB_BASE ?>/">Accueil</a>
       <?php if ($logged): ?>
         <a class="btn btn-outline" href="<?= WEB_BASE ?>/profile.php">Profil</a>
+        <a class="btn btn-outline" href="<?= WEB_BASE ?>/chat.php">Messages</a>
         <?php if ($role === 'admin'): ?>
           <a class="btn btn-outline" href="<?= WEB_BASE ?>/admin.php#sections">Admin</a>
         <?php endif; ?>

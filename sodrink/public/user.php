@@ -1,27 +1,40 @@
 <?php
 // user.php — Profil public d'un utilisateur
+
 declare(strict_types=1);
 require_once __DIR__ . '/../src/bootstrap.php';
 
 $title = 'Profil — SoDrink';
 include __DIR__ . '/../views/partials/head.php';
 ?>
-<body>
+<body class="profile-public">
 <?php include __DIR__ . '/../views/partials/header.php'; ?>
-<main class="container">
-  <section class="card" id="user-card">
-    <h2 id="user-title">Profil</h2>
-    <div class="profile-grid">
-      <div class="avatar-panel">
-        <img id="pub-avatar" class="avatar-xl" src="<?= WEB_BASE ?>/assets/img/ui/avatar-default.svg" alt="avatar">
+<main class="container profile-container">
+  <section class="card profile-hero" id="user-card">
+    <div id="pub-banner" class="profile-banner"></div>
+    <div class="profile-hero-body">
+      <div class="profile-hero-avatar">
+        <img id="pub-avatar" class="avatar-xl" src="<?= WEB_BASE ?>/assets/img/ui/avatar-default.svg" alt="Avatar">
       </div>
-      <div class="form">
-        <div><strong>Pseudo :</strong> <span id="pub-pseudo">—</span></div>
-        <div><strong>Nom :</strong> <span id="pub-nom">—</span></div>
-        <div><strong>Prénom :</strong> <span id="pub-prenom">—</span></div>
-        <div><strong>Instagram :</strong> <span id="pub-ig">—</span></div>
+      <div class="profile-hero-text">
+        <h1 id="user-title">Profil</h1>
+        <p class="muted" id="pub-fullname">—</p>
+        <div class="profile-meta" id="pub-meta"></div>
+        <div class="profile-actions">
+          <a class="btn btn-sm btn-outline" id="btn-message" href="<?= WEB_BASE ?>/chat.php">Envoyer un message</a>
+        </div>
       </div>
     </div>
+  </section>
+
+  <section class="card profile-card">
+    <h2>À propos</h2>
+    <p id="pub-bio" class="muted">Cet utilisateur n’a pas encore partagé d’informations.</p>
+    <div class="profile-links-display">
+      <h3>Liens</h3>
+      <div id="pub-links" class="preview-links"></div>
+    </div>
+    <div class="profile-contact" id="pub-contact"></div>
   </section>
 
   <section class="section card">
