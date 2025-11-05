@@ -2,13 +2,20 @@ import API from '../api.js';
 
 const BASE = window.SODRINK_BASE || '';
 let currentUser = null;
+let loadPromise = null;
+let refreshTimer = null;
+let lastLoadError = 0;
+
+const REFRESH_INTERVAL = 5000;
 
 const $=(s,el=document)=>el.querySelector(s);
 const el=(t,c)=>{const n=document.createElement(t); if(c) n.className=c; return n;};
 const h=(html)=>{const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstChild;};
 
 async function me(){ try{ return (await API.me()).user; }catch{ return null; } }
-async function list(){ return API.get('/api/sections/next-event.php?limit=20'); }
+async function list(){
+  return API.get(`/api/sections/next-event.php?limit=20&_=${Date.now()}`);
+}
 
 function canEdit(ev){
   if (!currentUser) return false;
@@ -28,14 +35,24 @@ function formatDateInput(v){
 
 function rsvpButtons(ev){
   const wrap = el('div','rsvp');
-  const iamIn = (ev.participants||[]).some(u=>Number(u.id)===Number(currentUser?.id||-1));
+  const iamIn = (ev.participants||[]).some(u=>{
+    if (u && typeof u === 'object' && 'id' in u) {
+      return Number(u.id) === Number(currentUser?.id || -1);
+    }
+    return Number(u) === Number(currentUser?.id || -1);
+  });
+  const count = ev.participants_count ?? (ev.participants?.length||0);
+  const max = Number(ev.max_participants ?? 0);
+  const full = max>0 && count>=max;
   if (!currentUser) return wrap;
   if (iamIn){
     wrap.innerHTML = `<button class="btn btn-outline" data-leave="${ev.id}">Se désinscrire</button>
-                      <button class="btn btn-light" data-participants="${ev.id}">Participants (${ev.participants_count ?? (ev.participants?.length||0)})</button>`;
+                      <button class="btn btn-light" data-participants="${ev.id}">Participants (${max>0?`${count}/${max}`:count})</button>`;
   }else{
-    wrap.innerHTML = `<button class="btn btn-primary" data-join="${ev.id}">J’y serai !</button>
-                      <button class="btn btn-light" data-participants="${ev.id}">Participants (${ev.participants_count ?? (ev.participants?.length||0)})</button>`;
+    const disabled = full ? ' disabled' : '';
+    const joinText = full ? 'Complet' : 'J’y serai !';
+    wrap.innerHTML = `<button class="btn btn-primary" data-join="${ev.id}"${disabled}>${joinText}</button>
+                      <button class="btn btn-light" data-participants="${ev.id}">Participants (${max>0?`${count}/${max}`:count})</button>`;
   }
   return wrap;
 }
@@ -45,12 +62,14 @@ function renderMiniCalendar(container, events){
   const now = new Date(), y = now.getFullYear(), m = now.getMonth();
   const first=new Date(y,m,1), start=first.getDay()||7, days=new Date(y,m+1,0).getDate();
   const marks = new Set(events.map(e=>e.date));
+  const todayStr = `${y}-${String(m+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
   const grid=el('div','cal-grid');
   for (let i=1;i<start;i++) grid.appendChild(el('div','cal-cell cal-empty'));
   for (let d=1; d<=days; d++){
     const cell=el('div','cal-cell'); cell.textContent=d;
     const dateStr=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     if (marks.has(dateStr)) cell.classList.add('cal-mark');
+    if (dateStr===todayStr) cell.classList.add('cal-today');
     grid.appendChild(cell);
   }
   container.appendChild(grid);
@@ -61,6 +80,10 @@ function renderList(container, list){
   if (!list?.length){ container.innerHTML='<em class="muted">Rien de plus pour l’instant.</em>'; return; }
   list.forEach(ev=>{
     const can = canEdit(ev);
+    const count = ev.participants_count ?? (ev.participants?.length||0);
+    const max = Number(ev.max_participants ?? 0);
+    const full = max>0 && count>=max;
+    const capacityText = max>0 ? `Participants : ${count}/${max}${full?' — complet':''}` : `Participants : ${count}`;
     const card = h(`
       <article class="event-item card" data-id="${ev.id}">
         <div class="event-head">
@@ -68,6 +91,7 @@ function renderList(container, list){
             <div class="event-date">${ev.date}</div>
             <div class="event-title"><strong>${ev.theme||'Soirée'}</strong> — <span class="muted">${ev.lieu||'—'}</span></div>
             <div class="event-author muted">par <a href="${BASE}/user.php?id=${encodeURIComponent(ev.author?.id||'')}">${ev.author?.pseudo||'—'}</a></div>
+            <div class="event-capacity muted">${capacityText}</div>
           </div>
           <div class="event-actions">
             ${can ? `<button class="btn btn-outline btn-sm" data-edit="${ev.id}">Modifier</button>
@@ -81,6 +105,7 @@ function renderList(container, list){
             <label>Date <input type="date" name="date" value="${formatDateInput(ev.date)}" required></label>
             <label>Lieu <input type="text" name="lieu" maxlength="120" value="${ev.lieu||''}" required></label>
             <label>Thème <input type="text" name="theme" maxlength="120" value="${ev.theme||''}"></label>
+            <label>Places max <input type="number" name="max_participants" min="0" max="500" value="${Number(ev.max_participants||0)||''}" placeholder="Illimité"></label>
           </div>
           <label>Description
             <textarea name="description" rows="3" maxlength="800">${ev.description||''}</textarea>
@@ -118,11 +143,10 @@ function bindCreateForm(){
     e.preventDefault();
     const data = Object.fromEntries(new FormData(form).entries());
     try{
-      const res = await API.post('/api/sections/next-event.php', data);
-      if (!res?.success) throw new Error(res?.error||'Erreur');
+      await API.post('/api/sections/next-event.php', data);
       form.reset();
       toast('Évènement créé ✅','success');
-      loadAll();
+      await loadAll(true);
     }catch(err){ toast(String(err.message||err),'error'); }
   });
 }
@@ -147,28 +171,26 @@ function bindListActions(){
       const f = card.querySelector('.event-edit');
       const data = Object.fromEntries(new FormData(f).entries());
       try{
-        const res = await API.put(`/api/sections/next-event.php?id=${id}`, data);
-        if (!res?.success) throw new Error(res?.error||'Erreur');
+        await API.put(`/api/sections/next-event.php?id=${id}`, data);
         toast('Évènement mis à jour ✅','success');
-        loadAll();
+        await loadAll(true);
       }catch(err){ toast(String(err.message||err),'error'); }
       return;
     }
     if (e.target.hasAttribute('data-del')){
       if (!confirm('Supprimer cet évènement ?')) return;
       try{
-        const res = await API.delete(`/api/sections/next-event.php?id=${id}`);
-        if (!res?.success) throw new Error(res?.error||'Erreur');
+        await API.del(`/api/sections/next-event.php?id=${id}`);
         toast('Évènement supprimé ✅','success');
-        loadAll();
+        await loadAll(true);
       }catch(err){ toast(String(err.message||err),'error'); }
       return;
     }
     if (e.target.hasAttribute('data-join')) {
+      if (e.target.disabled) return;
       try{
-        const res = await API.post(`/api/sections/event-participation.php?event_id=${id}`, {});
-        if (!res?.success) throw new Error(res?.error||'Erreur');
-        loadAll();
+        await API.post(`/api/sections/event-participation.php?event_id=${id}`, {});
+        await loadAll(true);
       }catch(err){ toast(String(err.message||err),'error'); }
       return;
     }
@@ -182,7 +204,7 @@ function bindListActions(){
         });
         const j = await r.json().catch(()=>({success:false, error:'Erreur'}));
         if (!j?.success) throw new Error(j?.error||'Erreur');
-        loadAll();
+        await loadAll(true);
       }catch(err){ toast(String(err.message||err),'error'); }
       return;
     }
@@ -219,13 +241,35 @@ function participantsModal(){ let modal=$('#participants-modal'); if (modal) ret
   return modal;
 }
 
-async function loadAll(){
-  currentUser = await me();
-  $('#event-form').hidden = !currentUser;
-  const data = await list();
-  // on n’affiche plus “prochain évènement” au-dessus : uniquement calendrier + liste
-  renderMiniCalendar($('#mini-calendar'), data.upcoming||[]);
-  renderList($('#event-list'), data.upcoming||[]);
+async function loadAll(force=false){
+  if (loadPromise && !force) return loadPromise;
+  if (loadPromise && force){
+    try { await loadPromise; } catch {}
+  }
+  loadPromise = (async ()=>{
+    try {
+      currentUser = await me();
+      const form = $('#event-form');
+      if (form) form.hidden = !currentUser;
+      const data = await list();
+      renderMiniCalendar($('#mini-calendar'), data.upcoming||[]);
+      renderList($('#event-list'), data.upcoming||[]);
+      lastLoadError = 0;
+    } catch (err) {
+      console.error('Chargement des évènements impossible', err);
+      const now = Date.now();
+      if (now - lastLoadError > 5000) {
+        toast('Impossible de charger les évènements.', 'error');
+        lastLoadError = now;
+      }
+      throw err;
+    }
+  })();
+  try {
+    await loadPromise;
+  } finally {
+    loadPromise = null;
+  }
 }
 
 function bindAll(){
@@ -233,4 +277,9 @@ function bindAll(){
   bindListActions();
 }
 
-window.addEventListener('DOMContentLoaded', ()=>{ loadAll(); bindAll(); });
+function startAutoRefresh(){
+  if (refreshTimer) clearInterval(refreshTimer);
+  refreshTimer = setInterval(()=>{ loadAll().catch(()=>{}); }, REFRESH_INTERVAL);
+}
+
+window.addEventListener('DOMContentLoaded', ()=>{ loadAll().catch(()=>{}); bindAll(); startAutoRefresh(); });

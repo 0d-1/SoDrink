@@ -57,12 +57,22 @@ if ($method === 'POST') {
     $date = safe_text($data['date'] ?? '', 10);
     if (!$date || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) json_error('Date invalide (YYYY-MM-DD)', 422);
 
+    $max = null;
+    if (isset($data['max_participants'])) {
+        $max = is_numeric($data['max_participants']) ? (int)$data['max_participants'] : 0;
+        $max = max(0, min(500, $max));
+        if ($max === 0) {
+            $max = null;
+        }
+    }
+
     $event = $repo->create([
         'date'        => $date,
         'lieu'        => safe_text($data['lieu'] ?? '', 120),
         'theme'       => safe_text($data['theme'] ?? '', 120),
         'description' => safe_text($data['description'] ?? '', 800),
         'created_by'  => (int)($_SESSION['user_id'] ?? 0),
+        'max_participants' => $max,
     ]);
 
     // Notification à l'auteur (lui-même) pour confirmation
@@ -105,8 +115,18 @@ if ($method === 'PUT' || $method === 'DELETE') {
             if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $d)) json_error('Date invalide', 422);
             $fields['date'] = $d;
         }
-        foreach (['lieu'=>120,'theme'=>120,'description'=>800] as $k=>$max) {
-            if (isset($data[$k])) $fields[$k] = safe_text((string)$data[$k], $max);
+        foreach (['lieu'=>120,'theme'=>120,'description'=>800] as $k=>$len) {
+            if (isset($data[$k])) $fields[$k] = safe_text((string)$data[$k], $len);
+        }
+        if (array_key_exists('max_participants', $data)) {
+            $mp = $data['max_participants'];
+            if ($mp === null || $mp === '' || (is_string($mp) && trim($mp) === '')) {
+                $fields['max_participants'] = null;
+            } else {
+                $val = is_numeric($mp) ? (int)$mp : 0;
+                $val = max(0, min(500, $val));
+                $fields['max_participants'] = $val === 0 ? null : $val;
+            }
         }
         if (!$fields) json_error('Aucune mise à jour', 400);
 
