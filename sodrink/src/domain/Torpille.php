@@ -107,27 +107,58 @@ class Torpille
     {
         [$im, $w, $h] = $this->loadImage($tmpPath);
 
-        $margin = max(10, (int)round(min($w, $h) * 0.02));
+        $ratio = 3 / 4; // largeur / hauteur
+
+        // Recadrage centré pour garantir le ratio 3:4
+        $cropW = $w;
+        $cropH = (int)round($w / $ratio);
+        $cropX = 0;
+        $cropY = 0;
+        if ($cropH > $h) {
+            $cropH = $h;
+            $cropW = (int)round($h * $ratio);
+            $cropX = (int)max(0, floor(($w - $cropW) / 2));
+        } else {
+            $cropY = (int)max(0, floor(($h - $cropH) / 2));
+        }
+
+        $maxWidth = 1200;
+        $destW = min($cropW, $maxWidth);
+        $destH = (int)round($destW / $ratio);
+        if ($destH > $cropH) {
+            $destH = $cropH;
+            $destW = (int)round($destH * $ratio);
+        }
+
+        $canvas = imagecreatetruecolor($destW, $destH);
+        imagecopyresampled($canvas, $im, 0, 0, $cropX, $cropY, $destW, $destH, $cropW, $cropH);
+
+        // Filigrane plus discret avec fond semi-transparent
+        $margin = max(12, (int)round(min($destW, $destH) * 0.025));
         $text = '#' . $seq;
         $font = 5; // bitmap font GD
         $tw = imagefontwidth($font) * strlen($text);
         $th = imagefontheight($font);
         $pad = (int)round($margin * 0.6);
 
-        $x1 = $w - $tw - $pad * 2 - $margin;
-        $y1 = $h - $th - $pad * 2 - $margin;
-        $x2 = $w - $margin;
-        $y2 = $h - $margin;
+        $x1 = $destW - $tw - $pad * 2 - $margin;
+        $y1 = $destH - $th - $pad * 2 - $margin;
+        $x2 = $destW - $margin;
+        $y2 = $destH - $margin;
 
-        $black = imagecolorallocate($im, 0, 0, 0);
-        imagefilledrectangle($im, $x1, $y1, $x2, $y2, $black);
+        imagealphablending($canvas, true);
+        $bg = imagecolorallocatealpha($canvas, 0, 0, 0, 70);
+        imagefilledrectangle($canvas, $x1, $y1, $x2, $y2, $bg);
 
-        $white = imagecolorallocate($im, 255, 255, 255);
-        imagestring($im, $font, $x1 + $pad, $y1 + $pad, $text, $white);
+        $white = imagecolorallocate($canvas, 255, 255, 255);
+        imagestring($canvas, $font, $x1 + $pad, $y1 + $pad, $text, $white);
 
         $name = 'torpille_' . time() . '_' . bin2hex(random_bytes(3)) . '.jpg';
         $dest = $this->uploadDir . '/' . $name;
-        imagejpeg($im, $dest, 90);
+        imageinterlace($canvas, true);
+        imagejpeg($canvas, $dest, 82);
+
+        imagedestroy($canvas);
         imagedestroy($im);
 
         $web = $this->uploadWebBase . '/' . $name;
