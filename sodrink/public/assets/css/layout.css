@@ -1,0 +1,252 @@
+/* ==========================================================================
+   SoDrink – layout.css (header, containers, cards, sections, galerie, drawer)
+   ========================================================================== */
+
+/* --------- Containers / Layout --------- */
+.container{
+  width:min(1100px, 92vw);
+  margin-inline:auto;
+}
+
+main.container{padding:1.25rem 0 2rem}
+
+/* Sections & titles */
+.section{margin:1.25rem 0}
+.section > h2{font-size:1.6rem; margin:0 0 .75rem}
+.section > h3{font-size:1.2rem; margin:0 0 .5rem}
+
+.hero{
+  margin:1rem 0 1.25rem;
+  padding:1.25rem 1rem;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:linear-gradient(180deg,#0b1220 0%, #0a0f1d 100%);
+}
+.hero h1{margin:0 0 .35rem; font-size:1.9rem}
+.hero .tag{color:#a9b4d0; margin:0}
+
+/* Cards */
+.card{
+  border:1px solid var(--border);
+  background:var(--card, #0b1220);
+  border-radius:16px;
+  padding:1rem;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+
+/* Inline helpers */
+.inline{display:flex; gap:.5rem; align-items:center; flex-wrap:wrap}
+
+/* Muted text */
+.muted{opacity:.75}
+
+/* --------- Header minimal --------- */
+.topbar{
+  position:sticky; top:0; z-index:40;
+  background:var(--header, #0a0f1d);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:saturate(160%) blur(6px);
+}
+.topbar-inner{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:1rem; padding:.75rem 0;
+}
+.logo{
+  font-weight:700; font-size:1.15rem;
+  color:#fff; text-decoration:none;
+}
+
+/* Retire l’ancien menu si présent */
+.topbar .nav{display:none !important;}
+
+.right-side{display:flex; align-items:center; gap:.5rem}
+
+/* User chip horizontal (avatar à gauche du nom) */
+.user-chip{
+  display:inline-flex; align-items:center; gap:.5rem;
+  padding:.25rem .6rem; border-radius:999px;
+  background:transparent; border:1px solid transparent;
+}
+.user-chip:hover{border-color:var(--border)}
+.user-chip .avatar{width:28px; height:28px; border-radius:50%; object-fit:cover}
+.user-chip .user-name{font-weight:600; color:#e6eaf6}
+
+/* Burger */
+.burger{border-radius:999px; width:36px; height:36px; line-height:1}
+
+/* --------- Drawer (panneau latéral droit) --------- */
+.drawer{
+  position:fixed; top:0; right:-360px; height:100vh;
+  width:min(360px, 90vw);
+  background:var(--card, #0b1220);
+  border-left:1px solid var(--border);
+  box-shadow:-20px 0 40px rgba(0,0,0,.35);
+  z-index:60; transition:right .25s ease;
+  display:flex;             /* NEW: le drawer devient un conteneur flex colonne */
+  flex-direction:column;
+}
+.drawer.open{right:0}
+.drawer-header{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:1rem; border-bottom:1px solid var(--border)
+}
+
+/* Corps en colonne + prend toute la hauteur disponible */
+.drawer-body{
+  flex:1;                   /* NEW */
+  display:flex;             /* NEW */
+  flex-direction:column;    /* NEW */
+  gap:1rem; padding:1rem;
+  overflow-y:auto;          /* NEW: scroll si contenu long */
+}
+
+/* Liens empilés */
+.drawer-nav{
+  display:grid; grid-auto-rows:min-content; gap:.5rem;
+}
+.drawer-nav .btn, .drawer-footer .btn{ width:100%; justify-content:center; }
+
+/* Pied poussé en bas */
+.drawer-footer{
+  margin-top:auto;          /* NEW: pousse le footer en bas */
+  padding-top:.75rem;
+  border-top:1px solid var(--border);
+}
+
+.drawer-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:50
+}
+
+
+/* Drawer – recherche utilisateurs */
+.search-box{position:relative}
+.search-box input{width:100%}
+.suggestions{
+  position:absolute; left:0; right:0; top:110%;
+  background:var(--card); border:1px solid var(--border);
+  border-radius:12px; overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,.35)
+}
+.suggest-item{
+  display:flex; align-items:center; gap:.5rem;
+  padding:.5rem .75rem; text-decoration:none; color:inherit
+}
+.suggest-item:hover{background:#0b1220}
+.suggest-item img{width:28px; height:28px; border-radius:50%; object-fit:cover}
+
+/* --------- Galerie --------- */
+.gallery-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(360px,1fr)); /* grandes cartes */
+  gap:1rem;
+}
+.photo-card{
+  overflow:hidden; border-radius:14px; border:1px solid var(--border);
+  background:#0b1220;
+}
+.photo-card img{width:100%; aspect-ratio:4/3; object-fit:cover; display:block}
+.photo-card-lg img{aspect-ratio:3/2}
+.photo-card figcaption{padding:.75rem}
+.grid-row{display:flex; justify-content:space-between; gap:1rem; align-items:flex-start}
+.author{white-space:nowrap}
+.author-link{color:var(--blue-300); text-decoration:none}
+.author-link:hover{color:var(--blue-200); text-decoration:underline}
+
+/* Edition galerie (admin/auteur) */
+.admin-actions{display:flex; gap:.5rem; margin-top:.5rem}
+.form.disabled{opacity:.6; pointer-events:none}
+
+/* --------- Pagination --------- */
+.pagination{display:flex; gap:.5rem; justify-content:center; margin-top:1rem}
+
+/* --------- Évènements --------- */
+.event-form{margin:.5rem 0 1rem}
+.event-form-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:.75rem}
+@media (max-width:800px){ .event-form-grid{grid-template-columns:1fr} }
+
+.event-list{display:grid; gap:.75rem}
+.event-item .event-head{display:flex; justify-content:space-between; gap:.75rem; align-items:flex-start}
+.event-title{margin-top:.25rem}
+.event-author a{color:var(--blue-300); text-decoration:none}
+.event-author a:hover{text-decoration:underline}
+
+/* Mini calendrier */
+.calendar{margin-top:.75rem}
+.cal-grid{
+  display:grid; grid-template-columns:repeat(7,1fr); gap:.25rem;
+  border:1px solid var(--border); border-radius:12px; padding:.5rem
+}
+.cal-cell{
+  height:34px; display:flex; align-items:center; justify-content:center;
+  border-radius:8px; background:#0b1220; border:1px solid transparent;
+  font-size:.95rem
+}
+.cal-empty{opacity:.15}
+.cal-mark{border-color:#1d4ed8; box-shadow:0 0 0 1px #1d4ed8 inset}
+
+/* --------- Tables (admin) --------- */
+.table{width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:12px}
+.table thead th{
+  text-align:left; font-weight:600; background:#0b1220; border-bottom:1px solid var(--border);
+  padding:.6rem .75rem
+}
+.table tbody td{padding:.55rem .75rem; border-bottom:1px solid var(--border)}
+.table tbody tr:hover{background:#0a1426}
+
+/* --------- Utilities --------- */
+.tag{display:inline-flex; gap:.4rem; align-items:center}
+.btn-sm{padding:.35rem .6rem; font-size:.9rem; border-radius:12px}
+.btn-danger{background:#7f1d1d; color:#fff; border-color:#7f1d1d}
+.btn-danger:hover{filter:brightness(1.05)}
+
+/* Toujours masquer les éléments avec l'attribut [hidden] */
+[hidden] { display: none !important; }
+
+/* Profil public — avatar raisonnable */
+.avatar-xl{
+  width:120px;              /* ajuste ici si tu veux plus petit/grand */
+  height:120px;
+  border-radius:50%;
+  object-fit:cover;
+  display:block;
+}
+.profile-grid{
+  display:grid; grid-template-columns:120px 1fr; gap:1rem; align-items:start;
+}
+@media (max-width:700px){
+  .profile-grid{ grid-template-columns:1fr; }
+  .avatar-xl{ margin-bottom:.75rem; }
+}
+
+/* Sécurité: tout élément [hidden] doit vraiment disparaître */
+[hidden]{ display:none !important; }
+
+/* Cloche & badge */
+.icon-btn{position:relative; border-radius:999px; padding:.25rem .5rem; background:#1d4ed8;}
+.badge{position:absolute; top:-6px; right:-6px; background:#1d4ed8; color:#fff; border-radius:999px; font-size:.75rem; padding:0 .35rem}
+.notif-wrapper{position:relative}
+.notif-dropdown{position:absolute; right:0; top:140%; width:min(360px,90vw); background:var(--card); border:1px solid var(--border); border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,.4); z-index:70}
+.notif-head{display:flex; justify-content:space-between; align-items:center; gap:.5rem; padding:.6rem .75rem; border-bottom:1px solid var(--border)}
+.notif-list{max-height:60vh; overflow:auto}
+.notif-item{display:grid; grid-template-columns:auto 1fr; gap:.5rem; padding:.55rem .75rem; text-decoration:none; color:inherit; border-bottom:1px solid var(--border)}
+.notif-item:hover{background:#0b1220}
+.notif-item.read .notif-dot{opacity:.25}
+.notif-dot{width:8px;height:8px;background:#1d4ed8;border-radius:50%; align-self:center}
+
+/* Commentaires */
+.comments{margin-top:.5rem}
+.comment-line{display:flex; gap:.5rem; align-items:flex-start; padding:.25rem 0}
+.comment-line img{width:26px;height:26px;border-radius:50%;object-fit:cover}
+
+/* Modal participants */
+.modal{position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; z-index:80}
+.modal-card{width:min(520px,90vw); background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden}
+.modal-head{display:flex; justify-content:space-between; align-items:center; padding:.75rem .9rem; border-bottom:1px solid var(--border)}
+.modal-body{padding:.75rem .9rem; max-height:70vh; overflow:auto}
+.user-line{display:flex; gap:.6rem; align-items:center; padding:.35rem 0}
+.user-line img{width:28px;height:28px;border-radius:50%;object-fit:cover}
+
+/* Garantit que [hidden] cache vraiment l’élément */
+[hidden]{display:none !important;}
+
+

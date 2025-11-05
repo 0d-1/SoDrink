@@ -1,0 +1,43 @@
+.btn{appearance:none;border:1px solid var(--border);background:#0b1220;color:var(--text);padding:.55rem .85rem;border-radius:999px;cursor:pointer}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:linear-gradient(180deg,var(--blue-600),var(--blue-700));border-color:transparent;color:white}
+.btn-outline{background:transparent;border-color:var(--blue-700);color:var(--blue-300)}
+
+input,select,textarea{background:#0b1220;border:1px solid var(--border);color:var(--text);padding:.6rem .7rem;border-radius:10px;outline:none}
+label{display:grid;gap:.35rem;font-weight:600;color:#cbd5e1}
+form.form{display:grid;gap:.75rem}
+
+/* Modales */
+.modal[hidden]{display:none}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:grid;place-items:center;z-index:50}
+.modal-content{background:var(--card);border:1px solid var(--border);padding:1rem;border-radius:16px;min-width:min(480px,90%)}
+
+/* Event box */
+.event-box{display:grid;gap:.5rem}
+.event-date{font-weight:700;color:var(--blue-300)}
+.event-meta{display:flex;gap:1rem;color:var(--muted)}
+.event-desc{color:#cbd5e1}
+
+/* Pagination */
+.pagination{display:flex;gap:.4rem;justify-content:center;margin-top:1rem}
+/* Boutons compacts */
+.btn-sm{padding:.35rem .6rem; font-size:.9rem; border-radius:12px}
+.btn-danger{background:#7f1d1d; color:#fff; border-color:#7f1d1d}
+.btn-danger:hover{filter:brightness(1.05)}
+
+/* Formulaire évènement */
+.event-form{margin:.5rem 0 1rem}
+.event-form-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:.75rem}
+@media (max-width:800px){ .event-form-grid{grid-template-columns:1fr}}
+
+/* Liste évènements */
+.event-list{display:grid; gap:.75rem}
+.event-item .event-head{display:flex; justify-content:space-between; gap:.75rem; align-items:flex-start}
+.event-title{margin-top:.25rem}
+.event-author a{color:var(--blue-300); text-decoration:none}
+.event-author a:hover{text-decoration:underline}
+/* Actions admin/auteur dans la galerie */
+.admin-actions{display:flex; gap:.5rem; margin-top:.5rem}
+.btn-sm{padding:.35rem .6rem; font-size:.9rem; border-radius:12px}
+.btn-danger{background:#7f1d1d; color:#fff; border-color:#7f1d1d}
+.btn-danger:hover{filter:brightness(1.05)}
