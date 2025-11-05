@@ -11,8 +11,10 @@ $avatar = $_SESSION['avatar'] ?? (WEB_BASE . '/assets/img/ui/avatar-default.svg'
       <div class="auth-area" id="auth-area">
         <?php if ($logged): ?>
           <div class="user-chip" title="<?= htmlspecialchars($pseudo ?: 'Moi'); ?>">
-            <img class="avatar" id="nav-avatar" src="<?= htmlspecialchars($avatar); ?>" alt="avatar">
-            <span id="nav-pseudo" class="user-name"><?= htmlspecialchars($pseudo ?: 'Moi'); ?></span>
+            <a class="user-chip-main" href="<?= WEB_BASE ?>/profile.php" aria-label="Accéder à mon profil">
+              <img class="avatar" id="nav-avatar" src="<?= htmlspecialchars($avatar); ?>" alt="avatar">
+              <span id="nav-pseudo" class="user-name"><?= htmlspecialchars($pseudo ?: 'Moi'); ?></span>
+            </a>
             <div class="notif-wrapper">
               <button id="btn-notif" class="icon-btn bell" aria-label="Notifications">🔔
                 <span id="notif-count" class="badge" hidden>0</span>
