@@ -50,7 +50,7 @@ session_set_cookie_params([
     'path'     => '/',
     'secure'   => $secure,
     'httponly' => true,
-    'samesite' => 'Strict',
+    'samesite' => 'Lax',
 ]);
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
