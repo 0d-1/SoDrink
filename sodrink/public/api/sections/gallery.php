@@ -71,7 +71,13 @@ if ($method === 'GET') {
     }, $all);
 
     if ($authorFilter > 0) {
-        $enriched = array_values(array_filter($enriched, static fn($g) => (int)($g['author']['id'] ?? 0) === $authorFilter));
+        $enriched = array_values(array_filter($enriched, static function ($g) use ($authorFilter): bool {
+            if (!is_array($g['author'])) {
+                return false;
+            }
+
+            return (int)($g['author']['id'] ?? 0) === $authorFilter;
+        }));
     }
 
     if ($search !== '') {
@@ -79,7 +85,7 @@ if ($method === 'GET') {
             $fields = [
                 mb_strtolower((string)($g['title'] ?? '')),
                 mb_strtolower((string)($g['description'] ?? '')),
-                mb_strtolower((string)($g['author']['pseudo'] ?? '')),
+                mb_strtolower((string)(is_array($g['author']) ? ($g['author']['pseudo'] ?? '') : '')),
             ];
             foreach ($fields as $text) {
                 if ($text !== '' && mb_strpos($text, $search) !== false) {
