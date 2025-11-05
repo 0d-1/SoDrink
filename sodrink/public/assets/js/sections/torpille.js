@@ -3,6 +3,32 @@ import API from '../api.js';
 const BASE = window.SODRINK_BASE || '';
 const $ = (s, el=document) => el.querySelector(s);
 
+const loaderEl   = () => $('#torpille-loader');
+const messageEl  = () => $('#torpille-message');
+const galleryEl  = () => $('#torpille-gallery');
+const emptyEl    = () => $('#torpille-empty');
+
+function setLoading(isLoading){
+  const loader = loaderEl();
+  if (loader) loader.hidden = !isLoading;
+  const gal = galleryEl();
+  if (gal) gal.classList.toggle('is-loading', !!isLoading);
+}
+
+function showMessage(text='', variant='info'){
+  const el = messageEl();
+  if (!el) return;
+  if (!text){
+    el.hidden = true;
+    el.textContent = '';
+    el.dataset.variant = '';
+    return;
+  }
+  el.hidden = false;
+  el.textContent = text;
+  el.dataset.variant = variant;
+}
+
 let state = null;
 let users = [];
 let stats = [];
@@ -16,16 +42,25 @@ window.matchMedia('(max-width: 640px)').addEventListener?.('change', (e)=>{
 });
 
 async function fetchData(page=1){
-  const r = await fetch(`${BASE}/api/sections/torpille.php?page=${page}&per_page=${perPage}`, {credentials:'include'});
-  const j = await r.json().catch(()=>({success:false}));
-  if (!j?.success) throw new Error(j?.error || 'Erreur');
-  state = j.data.state;
-  users = j.data.users || [];
-  stats = j.data.stats || [];
-  renderHead();
-  renderForm();
-  renderGallery(j.data.list || {items:[], page:1, pages:1});
-  maybeShowOverlay(j.data.latest || null);
+  setLoading(true);
+  showMessage('');
+  try {
+    const r = await fetch(`${BASE}/api/sections/torpille.php?page=${page}&per_page=${perPage}`, {credentials:'include'});
+    const j = await r.json().catch(()=>({success:false}));
+    if (!j?.success) throw new Error(j?.error || 'Erreur inattendue.');
+    state = j.data.state;
+    users = j.data.users || [];
+    stats = j.data.stats || [];
+    renderHead();
+    renderForm();
+    renderGallery(j.data.list || {items:[], page:1, pages:1});
+    maybeShowOverlay(j.data.latest || null);
+  } catch (err) {
+    console.error(err);
+    showMessage(String(err.message || err), 'error');
+  } finally {
+    setLoading(false);
+  }
 }
 
 /* ============================== Top3 + panneau ============================== */
@@ -57,14 +92,26 @@ function renderForm(){
   const form = $('#torpille-form');
   const info = $('#torpille-state');
   const sel = $('#torpille-next');
+  const badge = $('#torpille-status-badge');
+
+  if (badge) badge.hidden = false;
 
   if (state.mask_current && !state.is_me_torpille) {
     info.textContent = 'Torpillé actuel : torpille en cours';
+    if (badge) { badge.textContent = 'En cours'; badge.dataset.variant = 'neutral'; }
   } else if (state.current_user_id){
     const curr = users.find(u=> Number(u.id) === Number(state.current_user_id));
-    info.textContent = curr ? `Torpillé actuel : ${curr.pseudo} · séquence #${state.sequence}` : `Torpillé actuel : #${state.sequence}`;
+    const label = curr ? `${curr.pseudo}` : `#${state.sequence}`;
+    info.textContent = curr
+      ? `Torpillé actuel : ${curr.pseudo} · séquence #${state.sequence}`
+      : `Torpillé actuel : #${state.sequence}`;
+    if (badge) {
+      badge.textContent = curr && state.is_me_torpille ? 'C’est toi !' : label;
+      badge.dataset.variant = state.is_me_torpille ? 'alert' : 'accent';
+    }
   } else {
     info.textContent = `Aucun(e) torpillé(e) en cours.`;
+    if (badge) { badge.textContent = 'Disponible'; badge.dataset.variant = 'success'; }
   }
 
   if (state.is_me_torpille){
@@ -82,15 +129,26 @@ function renderForm(){
 function renderGallery(list){
   const box = $('#torpille-gallery');
   const pag = $('#torpille-pagination');
+  const emptyBox = emptyEl();
   if (!box) return;
 
   const items = list.items || [];
   box.innerHTML = '';
+  box.classList.toggle('has-items', items.length > 0);
+  if (emptyBox) {
+    if (items.length === 0) {
+      emptyBox.hidden = false;
+      emptyBox.textContent = 'Aucune torpille enregistrée pour le moment.';
+    } else {
+      emptyBox.hidden = true;
+      emptyBox.textContent = '';
+    }
+  }
   items.forEach(p => {
     const card = document.createElement('div');
     card.className = 'photo card';
     card.innerHTML = `
-      <div class="wrap"><img loading="lazy" src="${p.path}" alt="#${p.seq}"></div>
+      <div class="wrap"><img loading="lazy" decoding="async" src="${p.path}" alt="#${p.seq}"></div>
       <div class="meta">
         <span class="muted">#${p.seq}</span>
         <span class="muted">${(p.created_at||'').replace('T',' ').slice(0,16)}</span>
@@ -107,13 +165,13 @@ function renderGallery(list){
     prev.className = 'btn';
     prev.textContent = '←';
     prev.disabled = (list.page||1) <= 1;
-    prev.addEventListener('click', ()=>{ currentPage = Math.max(1, list.page-1); fetchData(currentPage).catch(alert); });
+    prev.addEventListener('click', ()=>{ currentPage = Math.max(1, list.page-1); fetchData(currentPage); });
 
     const next = document.createElement('button');
     next.className = 'btn';
     next.textContent = '→';
     next.disabled = (list.page||1) >= (list.pages||1);
-    next.addEventListener('click', ()=>{ currentPage = Math.min(list.pages, list.page+1); fetchData(currentPage).catch(alert); });
+    next.addEventListener('click', ()=>{ currentPage = Math.min(list.pages, list.page+1); fetchData(currentPage); });
 
     const info = document.createElement('span');
     info.className = 'muted';
@@ -132,6 +190,13 @@ function bindUpload(){
   const btnChoose = $('#torpille-btn-choose');
   const preview = $('#torpille-preview');
   const placeholder = $('#torpille-placeholder');
+  const submitBtn = form?.querySelector('button[type="submit"]');
+
+  const setBusy = (flag)=>{
+    if (!submitBtn) return;
+    submitBtn.disabled = !!flag;
+    submitBtn.classList.toggle('is-busy', !!flag);
+  };
 
   btnCam?.addEventListener('click', ()=>{
     fileIn.setAttribute('accept', 'image/*');
@@ -150,10 +215,11 @@ function bindUpload(){
       preview.style.display = 'none';
       placeholder.style.display = '';
       preview.removeAttribute('src');
+      showMessage('Aucune photo sélectionnée.', 'info');
       return;
     }
     if (!f.type || !f.type.startsWith('image/')){
-      alert("Le fichier sélectionné n'est pas une image.");
+      showMessage("Le fichier sélectionné n'est pas une image.", 'error');
       fileIn.value = '';
       preview.style.display = 'none';
       placeholder.style.display = '';
@@ -172,9 +238,10 @@ function bindUpload(){
     const f = fileIn.files && fileIn.files[0];
     const toSel = $('#torpille-next');
     const nextId = Number(toSel?.value||'0');
-    if (!f){ alert('Choisis ou prends une photo.'); return; }
-    if (!nextId){ alert('Choisis la personne à torpiller.'); return; }
+    if (!f){ showMessage('Choisis ou prends une photo avant de torpiller.', 'error'); return; }
+    if (!nextId){ showMessage('Sélectionne la prochaine personne torpillée.', 'error'); return; }
 
+    setBusy(true);
     try{
       // Recadrage 3:4 avant envoi
       const croppedBlob = await cropToThreeFour(f, 1500); // largeur max ~1500px
@@ -189,15 +256,18 @@ function bindUpload(){
       const j = await res.json().catch(()=>({success:false}));
       if (!j?.success) throw new Error(j?.error||'Erreur');
 
-      alert('Torpille enregistrée et nouveau joueur désigné !');
       form.reset();
       preview.style.display = 'none';
       placeholder.style.display = '';
       preview.removeAttribute('src');
       currentPage = 1;
       await fetchData(currentPage);
+      showMessage('Torpille enregistrée et nouveau joueur désigné !', 'success');
     }catch(err){
-      alert(String(err.message||err));
+      console.error(err);
+      showMessage(String(err.message||err), 'error');
+    }finally{
+      setBusy(false);
     }
   });
 }
@@ -248,19 +318,43 @@ function drawToBlob(img, sx, sy, sw, sh, maxW){
 /* ============================== Overlay (identique) ============================== */
 function maybeShowOverlay(latest){
   try{
+    if (!state?.is_me_torpille || !latest?.path) return;
+    const seq = Number(latest.seq || latest.id || 0);
+    const me = Number(window.__ME_ID__ || 0);
+    const storageKey = me ? `torpille_last_seen_seq_${me}` : 'torpille_last_seen_seq';
     const just = sessionStorage.getItem('just_logged_in') === '1';
-    if (!just || !latest?.path) return;
+    const lastSeen = Number(localStorage.getItem(storageKey) || '0');
+    if (!just && (!seq || seq <= lastSeen)) return;
     const over = $('#torpille-overlay');
     const img = $('#torpille-overlay-img');
     const confirmBox = $('#torpille-confirm');
+    if (!over || !img || !confirmBox) return;
     img.src = latest.path;
     over.hidden = false;
     const close = $('#torpille-close');
     const yes = $('#torpille-yes');
     const no = $('#torpille-no');
+    if (!close || !yes || !no) return;
+    const markSeen = ()=>{
+      if (seq) localStorage.setItem(storageKey, String(seq));
+      sessionStorage.removeItem('just_logged_in');
+    };
     close.onclick = ()=>{ confirmBox.hidden = false; };
     yes.onclick = ()=>{ confirmBox.hidden = true; };
-    no.onclick = ()=>{ over.hidden = true; confirmBox.hidden = true; sessionStorage.removeItem('just_logged_in'); };
+    const hideOverlay = ()=>{
+      over.hidden = true;
+      confirmBox.hidden = true;
+      markSeen();
+      document.removeEventListener('keydown', onKey);
+    };
+    no.onclick = hideOverlay;
+    over.onclick = (ev)=>{
+      if (ev.target === over){ confirmBox.hidden = true; }
+    };
+    const onKey = (ev)=>{
+      if (ev.key === 'Escape'){ hideOverlay(); }
+    };
+    document.addEventListener('keydown', onKey);
   }catch{}
 }
 

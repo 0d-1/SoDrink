@@ -76,7 +76,7 @@ if ($method === 'GET') {
     $payload = [
         'state'  => $state_for_client,
         'list'   => $list,
-        'latest' => $latest,
+        'latest' => ($is_me || isAdmin()) ? $latest : null,
         'users'  => array_map([Users::class, 'toPublic'], $users->getAll()),
         'stats'  => build_stats($repo),
     ];
