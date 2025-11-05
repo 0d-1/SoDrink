@@ -1,0 +1,249 @@
+:root{
+  /* Accent qui suit la charte du site (bleu) */
+  --accent: var(--blue-500);
+  --accent-strong: var(--blue-600);
+}
+
+/* --- Sticky footer juste pour la page login (car cette feuille n'est chargée que là) --- */
+html, body { height: 100%; }
+body{
+  min-height: 100dvh;            /* couvre toute la hauteur du viewport */
+  display: flex;
+  flex-direction: column;
+}
+main.container.login-page{
+  flex: 1 0 auto;                /* le main prend la place, pousse le footer en bas */
+}
+
+/* Scope à la page login pour ne rien casser ailleurs */
+.login-page{
+  min-height: 70vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem 0 4rem;
+}
+
+/* Le conteneur UI reprend le design animé fourni */
+/* ↑↑ Hauteur augmentée de 80px : 520px -> 600px */
+.login-page .container-ui{
+  position: relative;
+  width: min(900px, 96vw);
+  height: 600px;                 /* ← modifié */
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 25px var(--accent);
+  overflow: hidden;
+  background: var(--card);
+  border-radius: 16px;
+}
+
+/* Panneaux de formulaires */
+.login-page .form-box{
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 40px;
+}
+
+.login-page .form-box h2{
+  font-size: 32px;
+  text-align: center;
+  color: var(--text);
+}
+
+.login-page .form-box.Login{ left: 0; }
+.login-page .form-box.Register{ right: 0; padding: 0 60px; }
+
+/* Animations d’entrée/sortie */
+.login-page .form-box.Login .animation{ transform: translateX(0%); transition: .7s; opacity: 1; transition-delay: calc(.1s * var(--S)); }
+.login-page .container-ui.active .form-box.Login .animation{ transform: translateX(-120%); opacity: 0; transition-delay: calc(.1s * var(--D)); }
+
+.login-page .form-box.Register .animation{ transform: translateX(120%); transition:.7s ease; opacity:0; filter:blur(10px); transition-delay: calc(.1s * var(--S)); }
+.login-page .container-ui.active .form-box.Register .animation{ transform: translateX(0%); opacity:1; filter:blur(0); transition-delay: calc(.1s * var(--li)); }
+
+/* Champs */
+.login-page .input-box{
+  position: relative;
+  width: 100%;
+  height: 50px;
+  margin-top: 22px;
+}
+
+.login-page .input-box input{
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: var(--text);
+  font-weight: 600;
+  border-bottom: 2px solid var(--border);
+  padding-right: 28px;
+  transition: .35s;
+}
+
+.login-page .input-box input:focus,
+.login-page .input-box input:valid{
+  border-bottom-color: var(--accent);
+}
+
+.login-page .input-box label{
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  font-size: 15px;
+  color: var(--muted);
+  transition: .3s;
+}
+
+.login-page .input-box input:focus ~ label,
+.login-page .input-box input:valid ~ label{
+  top: -6px;
+  color: var(--accent);
+}
+
+.login-page .input-box box-icon{
+  position: absolute;
+  top: 50%;
+  right: 0;
+  font-size: 18px;
+  transform: translateY(-50%);
+  color: var(--muted);
+}
+
+.login-page .input-box input:focus ~ box-icon,
+.login-page .input-box input:valid ~ box-icon{
+  color: var(--accent);
+}
+
+/* Checkbox + alerts */
+.login-page .checkbox-line{
+  margin-top: 14px;
+  font-size: 14px;
+  color: var(--muted);
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+}
+
+.login-page .alert{ 
+  padding:.6rem .8rem; border-radius:.5rem; margin:.6rem 0 0; font-weight:600; 
+  border:1px solid transparent;
+}
+.login-page .alert-error{ background:#2b1820; color:#ffb4c0; border-color:#59243a; }
+.login-page .alert-ok{ background:#14281a; color:#a5f0b1; border-color:#1f4d2f; }
+
+/* Boutons */
+.login-page .btn{
+  position: relative;
+  width: 100%;
+  height: 45px;
+  background: transparent;
+  border-radius: 40px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  border: 2px solid var(--accent);
+  color: var(--text);
+  overflow: hidden;
+  z-index: 1;
+}
+
+.login-page .btn::before{
+  content: "";
+  position: absolute;
+  height: 300%;
+  width: 100%;
+  background: linear-gradient(var(--bg), var(--accent), var(--bg), var(--accent));
+  top: -100%;
+  left: 0;
+  z-index: -1;
+  transition: .5s;
+}
+
+.login-page .btn:hover::before{ top: 0; }
+
+.login-page .btn-spinner{
+  display:inline-block; width:1em; height:1em; border-radius:50%;
+  border:.18em solid currentColor; border-right-color:transparent;
+  animation: spin .7s linear infinite; vertical-align:-.125em; margin-left:.5rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.login-page .regi-link{
+  font-size: 14px; text-align: center; margin: 18px 0 8px;
+}
+.login-page .regi-link a{
+  text-decoration: none; color: var(--accent); font-weight: 700;
+}
+.login-page .regi-link a:hover{ text-decoration: underline; }
+
+/* Textes d’info à droite/gauche */
+.login-page .info-content{
+  position: absolute;
+  top: 0; height: 100%; width: 50%;
+  display: flex; justify-content: center; flex-direction: column;
+}
+.login-page .info-content h2{ text-transform: uppercase; font-size: 34px; line-height: 1.3; color: var(--text); }
+.login-page .info-content p{ font-size: 16px; color: var(--muted); }
+
+.login-page .info-content.Login{ right: 0; text-align: right; padding: 0 40px 60px 150px; }
+.login-page .info-content.Register{ left: 0; text-align: left; padding: 0 150px 60px 38px; pointer-events: none; }
+
+.login-page .info-content.Login .animation{ transform: translateX(0); transition:.7s ease; transition-delay: calc(.1s * var(--S)); opacity:1; filter:blur(0); }
+.login-page .container-ui.active .info-content.Login .animation{ transform: translateX(120%); opacity:0; filter:blur(10px); transition-delay: calc(.1s * var(--D)); }
+
+.login-page .info-content.Register .animation{ transform: translateX(-120%); transition:.7s ease; opacity:0; filter:blur(10px); transition-delay: calc(.1s * var(--S)); }
+.login-page .container-ui.active .info-content.Register .animation{ transform: translateX(0%); opacity:1; filter:blur(0); transition-delay: calc(.1s * var(--li)); }
+
+/* Formes courbes */
+.login-page .curved-shape{
+  position: absolute;
+  right: 0;
+  top: -5px;
+  height: 650px;
+  width: 900px;
+  background: linear-gradient(45deg, var(--bg), var(--accent-strong));
+  transform: rotate(10deg) skewY(40deg);
+  transform-origin: bottom right;
+  transition: 1.5s ease;
+  transition-delay: 1.6s;
+  opacity:.9;
+}
+
+.login-page .container-ui.active .curved-shape{
+  transform: rotate(0deg) skewY(0deg);
+  transition-delay: .5s;
+}
+
+.login-page .curved-shape2{
+  position: absolute;
+  left: 250px;
+  top: 100%;
+  height: 720px;
+  width: 900px;
+  background: var(--bg);
+  border-top: 3px solid var(--accent);
+  transform: rotate(0deg) skewY(0deg);
+  transform-origin: bottom left;
+  transition: 1.5s ease;
+  transition-delay: .5s;
+}
+
+.login-page .container-ui.active .curved-shape2{
+  transform: rotate(-11deg) skewY(-41deg);
+  transition-delay: 1.2s;
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .login-page .container-ui{ height:auto; min-height: 640px; }
+  .login-page .form-box{ position: relative; width: 100%; padding: 28px; }
+  .login-page .info-content{ display: none; }
+  .login-page .curved-shape, .login-page .curved-shape2{ display: none; }
+}

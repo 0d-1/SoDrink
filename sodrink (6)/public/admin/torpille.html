@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Admin – Torpille</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Si ton layout global définit déjà un csrf token, laisse-le, sinon tu peux en mettre un ici -->
+  <!-- <meta name="csrf-token" content="..."> -->
+  <style>
+    :root { --pad: 14px; --gap: 10px; --radius: 10px; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; padding: 24px; background: #0b0e14; color: #eaeef7; }
+    h1 { margin-top: 0; font-size: 22px; }
+    .card { background: #111722; border: 1px solid #1e2636; border-radius: var(--radius); padding: var(--pad); margin-bottom: 16px; }
+    .row { display: grid; grid-template-columns: 1fr auto; gap: var(--gap); align-items: end; }
+    label { display: block; font-size: 13px; color: #a8b2c3; margin-bottom: 6px; }
+    input[type="text"] { width: 100%; background: #0f1420; color: #eaeef7; border: 1px solid #243049; border-radius: 8px; padding: 10px; }
+    input[type="text"]::placeholder { color: #6d7890; }
+    button { background: #2f6fed; color: #fff; border: 0; border-radius: 8px; padding: 10px 14px; cursor: pointer; font-weight: 600; }
+    button.secondary { background: #1f2738; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    .muted { color: #9aa6bd; font-size: 13px; }
+    .state { display: grid; grid-template-columns: 1fr 2fr; gap: var(--gap); }
+    .pill { display: inline-block; background: #1a2232; border: 1px solid #2a3550; border-radius: 999px; padding: 4px 10px; font-size: 12px; color: #c7d2ea; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 8px; border-bottom: 1px solid #1d2536; }
+    th { color: #9fb2d8; font-weight: 600; }
+    .flex { display: flex; gap: var(--gap); align-items: center; }
+    .gap { height: 8px; }
+    .ok { color: #58d68d; }
+    .err { color: #ff8080; }
+  </style>
+</head>
+<body>
+  <h1>Gestion de la Torpille</h1>
+
+  <div class="card">
+    <div class="state">
+      <div>
+        <div class="muted">Détenteur actuel</div>
+        <div id="current" class="pill">—</div>
+      </div>
+      <div>
+        <div class="muted">Démarrée le</div>
+        <div id="started" class="pill">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;font-size:18px;">Démarrer / redémarrer</h2>
+    <p class="muted">Définis le <strong>premier torpillé</strong>. Si la torpille a déjà démarré, coche « forcer » pour réinitialiser.</p>
+    <div class="row">
+      <div>
+        <label for="first">Premier torpillé</label>
+        <input id="first" type="text" placeholder="Nom / pseudo" />
+        <div class="gap"></div>
+        <label><input id="force" type="checkbox" /> Forcer la réinitialisation</label>
+      </div>
+      <div class="flex">
+        <button id="setFirstBtn">Démarrer</button>
+      </div>
+    </div>
+    <div id="firstMsg" class="muted"></div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;font-size:18px;">Transférer la torpille</h2>
+    <div class="row">
+      <div>
+        <label for="to">Nouveau détenteur</label>
+        <input id="to" type="text" placeholder="Nom / pseudo" />
+        <div class="gap"></div>
+        <label for="note">Note (facultatif)</label>
+        <input id="note" type="text" placeholder="Raison, lieu, etc." />
+      </div>
+      <div class="flex">
+        <button id="transferBtn">Transférer</button>
+      </div>
+    </div>
+    <div id="transferMsg" class="muted"></div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0;font-size:18px;">Historique</h2>
+    <div id="historyWrap" class="muted">Aucun événement pour l’instant.</div>
+  </div>
+
+<script>
+(function(){
+  const api = '/public/api/torpille.php';
+
+  function readCookie(name) {
+    return document.cookie.split('; ').reduce((acc, c) => {
+      const [k, v] = c.split('=');
+      return k === name ? decodeURIComponent(v) : acc;
+    }, '');
+  }
+  function getCsrfToken() {
+    const fromMeta = document.querySelector('meta[name="csrf-token"]');
+    if (fromMeta && fromMeta.content) return fromMeta.content;
+    const candidates = ['csrf_token', 'XSRF-TOKEN', 'csrftoken', '_csrf'];
+    for (const c of candidates) {
+      const val = readCookie(c);
+      if (val) return val;
+    }
+    return '';
+  }
+  async function jfetch(url, options = {}) {
+    const headers = new Headers(options.headers || {});
+    headers.set('Content-Type', 'application/json');
+    const csrf = getCsrfToken();
+    if (csrf) headers.set('X-CSRF-Token', csrf);
+    const res = await fetch(url, { ...options, headers, credentials: 'include' });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data?.ok === false) {
+      const msg = data?.error || data?.message || res.statusText;
+      throw new Error(msg || 'Erreur requête');
+    }
+    return data;
+  }
+
+  const $ = sel => document.querySelector(sel);
+  const $current = $('#current');
+  const $started = $('#started');
+  const $historyWrap = $('#historyWrap');
+  const $first = $('#first');
+  const $force = $('#force');
+  const $setFirstBtn = $('#setFirstBtn');
+  const $firstMsg = $('#firstMsg');
+  const $to = $('#to');
+  const $note = $('#note');
+  const $transferBtn = $('#transferBtn');
+  const $transferMsg = $('#transferMsg');
+
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    try {
+      const d = new Date(iso);
+      return d.toLocaleString('fr-BE', { dateStyle: 'medium', timeStyle: 'short' });
+    } catch { return iso; }
+  }
+
+  function render(state) {
+    $current.textContent = state.current_holder || '—';
+    $started.textContent = fmtDate(state.started_at);
+
+    const hist = Array.isArray(state.history) ? state.history.slice().reverse() : [];
+    if (!hist.length) { $historyWrap.textContent = 'Aucun événement pour l’instant.'; return; }
+
+    const rows = hist.map(h => {
+      const who = h.by ? ` <span class="muted">par</span> ${escapeHtml(h.by)}` : '';
+      const note = h.note ? ` <span class="muted">·</span> ${escapeHtml(h.note)}` : '';
+      return `<tr>
+        <td>${fmtDate(h.at)}</td>
+        <td>${h.from ? escapeHtml(h.from) : '<em>—</em>'}</td>
+        <td>→</td>
+        <td>${escapeHtml(h.to)}</td>
+        <td class="muted">${who}${note}</td>
+      </tr>`;
+    }).join('');
+
+    $historyWrap.innerHTML = `<table>
+      <thead><tr><th>Date</th><th>De</th><th></th><th>À</th><th>Info</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  }
+
+  function escapeHtml(s){ return (s??'').toString().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+
+  async function refresh() {
+    try {
+      const { state } = await jfetch(api, { method: 'GET' });
+      render(state);
+    } catch (e) {
+      $historyWrap.innerHTML = `<span class="err">Erreur de chargement : ${escapeHtml(e.message)}</span>`;
+    }
+  }
+
+  $setFirstBtn.addEventListener('click', async () => {
+    $setFirstBtn.disabled = true;
+    $firstMsg.textContent = '…';
+    try {
+      const holder = $first.value.trim();
+      const force = !!$force.checked;
+      if (!holder) { throw new Error('Saisis un nom'); }
+      const { state } = await jfetch(api, {
+        method: 'PUT',
+        body: JSON.stringify({ action: 'set_first', holder, force })
+      });
+      $firstMsg.innerHTML = `<span class="ok">OK</span> – Premier torpillé : ${escapeHtml(state.first_holder)}`;
+      render(state);
+    } catch (e) {
+      $firstMsg.innerHTML = `<span class="err">${escapeHtml(e.message)}</span>`;
+    } finally {
+      $setFirstBtn.disabled = false;
+    }
+  });
+
+  $transferBtn.addEventListener('click', async () => {
+    $transferBtn.disabled = true;
+    $transferMsg.textContent = '…';
+    try {
+      const to = $to.value.trim();
+      const note = $note.value.trim();
+      if (!to) { throw new Error('Saisis le nouveau détenteur'); }
+      const { state } = await jfetch(api, {
+        method: 'PUT',
+        body: JSON.stringify({ action: 'transfer', to, note })
+      });
+      $transferMsg.innerHTML = `<span class="ok">Transféré</span> à ${escapeHtml(state.current_holder)}`;
+      $to.value = ''; $note.value = '';
+      render(state);
+    } catch (e) {
+      $transferMsg.innerHTML = `<span class="err">${escapeHtml(e.message)}</span>`;
+    } finally {
+      $transferBtn.disabled = false;
+    }
+  });
+
+  refresh();
+})();
+</script>
+</body>
+</html>
