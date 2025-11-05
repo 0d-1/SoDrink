@@ -46,12 +46,18 @@ class Users
             'prenom'          => (string)($u['prenom'] ?? ''),
             'nom'             => (string)($u['nom'] ?? ''),
             'instagram'       => $u['instagram'] ?? null,
+            'bio'             => (string)($u['bio'] ?? ''),
+            'website'         => $u['website'] ?? null,
+            'location'        => $u['location'] ?? null,
+            'relationship_status' => $u['relationship_status'] ?? null,
+            'links'           => array_values($u['links'] ?? []),
             'pass_hash'       => (string)($u['pass_hash'] ?? ''),
             'email'           => $u['email'] ?? null,
             'google_id'       => $u['google_id'] ?? null,
             'auth_provider'   => $u['auth_provider'] ?? 'local',
             'role'            => in_array(($u['role'] ?? 'user'), ['user','admin'], true) ? $u['role'] : 'user',
             'avatar'          => $u['avatar'] ?? null,
+            'banner'          => $u['banner'] ?? null,
             'created_at'      => date('c'),
             'remember_tokens' => [],
         ];
@@ -64,7 +70,10 @@ class Users
         $cur = $this->store->findById($id);
         if (!$cur) return false;
 
-        foreach (['pseudo','prenom','nom','instagram','pass_hash','role','avatar','remember_tokens','email','google_id','auth_provider'] as $k) {
+        foreach ([
+            'pseudo','prenom','nom','instagram','bio','website','location','relationship_status','links',
+            'pass_hash','role','avatar','banner','remember_tokens','email','google_id','auth_provider'
+        ] as $k) {
             if (array_key_exists($k, $fields)) $cur[$k] = $fields[$k];
         }
         return $this->store->updateById($id, $cur);
@@ -110,6 +119,12 @@ class Users
             'avatar'    => $u['avatar'] ?? null,
             'email'     => $u['email'] ?? null,
             'auth_provider' => $u['auth_provider'] ?? 'local',
+            'bio'       => $u['bio'] ?? '',
+            'website'   => $u['website'] ?? null,
+            'location'  => $u['location'] ?? null,
+            'relationship_status' => $u['relationship_status'] ?? null,
+            'links'     => array_values($u['links'] ?? []),
+            'banner'    => $u['banner'] ?? null,
         ];
     }
 

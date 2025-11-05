@@ -7,10 +7,12 @@ require_once $GLOBALS['SODRINK_ROOT'] . '/src/domain/Users.php';
 use SoDrink\Domain\Users;
 use function SoDrink\Security\require_login;
 use function SoDrink\Security\require_csrf;
+use function SoDrink\Security\safe_multiline;
 use function SoDrink\Security\safe_text;
 use function SoDrink\Security\valid_pseudo;
 use function SoDrink\Security\valid_name;
 use function SoDrink\Security\sanitize_instagram;
+use function SoDrink\Security\sanitize_url;
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
@@ -61,6 +63,67 @@ if ($method === 'PUT') {
     if (array_key_exists('instagram', $data)) {
         $insta = sanitize_instagram($data['instagram']);
         $fields['instagram'] = $insta;
+    }
+
+    if (array_key_exists('bio', $data)) {
+        $fields['bio'] = safe_multiline((string)$data['bio'], 600);
+    }
+
+    if (array_key_exists('website', $data)) {
+        $fields['website'] = sanitize_url($data['website']);
+    }
+
+    if (array_key_exists('location', $data)) {
+        $loc = safe_text((string)$data['location'], 80);
+        $fields['location'] = $loc !== '' ? $loc : null;
+    }
+
+    if (array_key_exists('relationship_status', $data)) {
+        $allowed = ['single','relationship','married','complicated','hidden'];
+        $status = (string)$data['relationship_status'];
+        if ($status === '' || $status === 'none') {
+            $fields['relationship_status'] = null;
+        } elseif (!in_array($status, $allowed, true)) {
+            json_error('Statut relationnel invalide', 422);
+        } else {
+            $fields['relationship_status'] = $status;
+        }
+    }
+
+    if (array_key_exists('links', $data)) {
+        if (!is_array($data['links'])) {
+            json_error('Liens invalides', 422);
+        }
+        $links = [];
+        foreach ($data['links'] as $link) {
+            if (!is_array($link)) continue;
+            $label = safe_text((string)($link['label'] ?? ''), 40);
+            $urlRaw = $link['url'] ?? '';
+            if ($label === '' && trim((string)$urlRaw) === '') {
+                continue;
+            }
+            $url = sanitize_url((string)$urlRaw);
+            if ($label === '' || !$url) {
+                json_error('Lien invalide', 422);
+            }
+            $links[] = ['label' => $label, 'url' => $url];
+            if (count($links) >= 5) {
+                break;
+            }
+        }
+        $fields['links'] = $links;
+    }
+
+    if (array_key_exists('email', $data)) {
+        $email = trim((string)$data['email']);
+        if ($email === '') {
+            $fields['email'] = null;
+        } else {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                json_error('Email invalide', 422);
+            }
+            $fields['email'] = mb_strtolower($email);
+        }
     }
 
     if (array_key_exists('password', $data)) {

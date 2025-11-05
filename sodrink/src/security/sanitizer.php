@@ -14,6 +14,28 @@ function safe_text(string $s, int $max = 255): string {
     return $s;
 }
 
+function safe_multiline(string $s, int $max = 500): string {
+    $s = trim(str_replace(["\r\n", "\r"], "\n", $s));
+    // Retire les caractères de contrôle, mais conserve les retours à la ligne
+    $s = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $s);
+    $s = strip_tags($s);
+    if ($max > 0) $s = mb_substr($s, 0, $max);
+    return $s;
+}
+
+function sanitize_url(?string $url): ?string {
+    if ($url === null) return null;
+    $url = trim($url);
+    if ($url === '') return null;
+    if (!preg_match('#^https?://#i', $url)) {
+        $url = 'https://' . $url;
+    }
+    if (!filter_var($url, FILTER_VALIDATE_URL)) {
+        return null;
+    }
+    return $url;
+}
+
 function valid_pseudo(string $s): bool {
     return (bool)preg_match('/^[A-Za-z0-9_.-]{3,20}$/', $s);
 }
