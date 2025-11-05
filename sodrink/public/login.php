@@ -4,8 +4,20 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../src/bootstrap.php';
 require_once __DIR__ . '/../src/security/auth.php';
+require_once __DIR__ . '/../src/security/google.php';
+
+use function SoDrink\Security\google_oauth_is_configured;
 
 $title = 'Connexion — SoDrink';
+
+$googleEnabled = google_oauth_is_configured();
+$googleError   = $_SESSION['google_auth_error'] ?? null;
+$googleMode    = $_SESSION['google_auth_mode'] ?? 'login';
+unset($_SESSION['google_auth_error'], $_SESSION['google_auth_mode']);
+
+$openRegister = $googleMode === 'register';
+$initialLoginError = ($googleError && !$openRegister) ? $googleError : null;
+$initialRegisterError = ($googleError && $openRegister) ? $googleError : null;
 
 include __DIR__ . '/../views/partials/head.php';
 include __DIR__ . '/../views/partials/header.php';
@@ -15,7 +27,7 @@ include __DIR__ . '/../views/partials/header.php';
   <!-- CSS spécifique à la page -->
   <link rel="stylesheet" href="<?= WEB_BASE ?>/assets/css/login.css">
   <section class="login-wrapper">
-    <div class="container-ui">
+    <div class="container-ui<?= $openRegister ? ' active' : '' ?>">
       <div class="curved-shape"></div>
       <div class="curved-shape2"></div>
 
@@ -39,7 +51,7 @@ include __DIR__ . '/../views/partials/header.php';
             <input id="login-remember" type="checkbox" name="remember" value="1"> Se souvenir de moi (2 semaines)
           </label>
 
-          <div id="login-error" class="alert alert-error animation" style="--D:3; --S:24" hidden></div>
+          <div id="login-error" class="alert alert-error animation" style="--D:3; --S:24" data-initial-message="<?= htmlspecialchars($initialLoginError ?? '', ENT_QUOTES) ?>"<?= $initialLoginError ? '' : ' hidden' ?>><?= htmlspecialchars($initialLoginError ?? '') ?></div>
 
           <div class="input-box animation" style="--D:4; --S:24">
             <button class="btn" id="login-submit" type="submit">
@@ -47,6 +59,23 @@ include __DIR__ . '/../views/partials/header.php';
               <span class="btn-spinner" hidden aria-hidden="true"></span>
             </button>
           </div>
+
+          <?php if ($googleEnabled): ?>
+          <div class="oauth-divider animation" style="--D:4; --S:24"><span>ou</span></div>
+          <div class="input-box animation" style="--D:5; --S:25">
+            <button class="btn btn-google" id="login-google" type="button">
+              <span class="google-icon" aria-hidden="true">
+                <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" role="img" focusable="false">
+                  <path d="M17.64 9.2045c0-.638-.0573-1.2518-.1636-1.8409H9v3.4818h4.8418c-.2091 1.1273-.8427 2.0827-1.7955 2.7227v2.2627h2.9082c1.7018-1.5682 2.6855-3.8809 2.6855-6.6263z" fill="#4285F4"/>
+                  <path d="M9 18c2.43 0 4.4636-.8055 5.9518-2.1691l-2.9082-2.2627c-.8054.54-1.8354.858-3.0436.858-2.3427 0-4.3281-1.5845-5.0359-3.7136H.956055v2.3318C2.43536 15.9836 5.48182 18 9 18z" fill="#34A853"/>
+                  <path d="M3.96409 10.7136c-.18-.54-.28227-1.1154-.28227-1.7136 0-.5981.10227-1.1736.28227-1.7136V4.95455H.956364C.347727 6.16273 0 7.54545 0 9s.347727 2.8373.956364 4.0455l3.007726-2.3318z" fill="#FBBC05"/>
+                  <path d="M9 3.54545c1.3209 0 2.5077.45455 3.4418 1.34727l2.5827-2.58273C13.4609.93 11.4273 0 9 0 5.48182 0 2.43536 2.01636.956055 4.95455l3.007995 2.33182C4.67182 5.12909 6.65727 3.54545 9 3.54545z" fill="#EA4335"/>
+                </svg>
+              </span>
+              <span class="google-label">Continuer avec Google</span>
+            </button>
+          </div>
+          <?php endif; ?>
 
           <div class="regi-link animation" style="--D:5; --S:25">
             <p>Pas encore de compte ? <br> <a href="#" class="SignUpLink">Créer un compte</a></p>
@@ -93,7 +122,7 @@ include __DIR__ . '/../views/partials/header.php';
             <box-icon name="instagram" type="logo"></box-icon>
           </div>
 
-          <div id="register-error" class="alert alert-error animation" style="--li:20; --S:5" hidden></div>
+          <div id="register-error" class="alert alert-error animation" style="--li:20; --S:5" data-initial-message="<?= htmlspecialchars($initialRegisterError ?? '', ENT_QUOTES) ?>"<?= $initialRegisterError ? '' : ' hidden' ?>><?= htmlspecialchars($initialRegisterError ?? '') ?></div>
           <div class="alert alert-ok animation" id="register-ok" style="--li:20; --S:5" hidden>Compte créé ! Redirection…</div>
 
           <div class="input-box animation" style="--li:20; --S:6">
@@ -102,6 +131,23 @@ include __DIR__ . '/../views/partials/header.php';
               <span class="btn-spinner" hidden aria-hidden="true"></span>
             </button>
           </div>
+
+          <?php if ($googleEnabled): ?>
+          <div class="oauth-divider animation" style="--li:20; --S:6"><span>ou</span></div>
+          <div class="input-box animation" style="--li:21; --S:7">
+            <button class="btn btn-google" id="register-google" type="button">
+              <span class="google-icon" aria-hidden="true">
+                <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" role="img" focusable="false">
+                  <path d="M17.64 9.2045c0-.638-.0573-1.2518-.1636-1.8409H9v3.4818h4.8418c-.2091 1.1273-.8427 2.0827-1.7955 2.7227v2.2627h2.9082c1.7018-1.5682 2.6855-3.8809 2.6855-6.6263z" fill="#4285F4"/>
+                  <path d="M9 18c2.43 0 4.4636-.8055 5.9518-2.1691l-2.9082-2.2627c-.8054.54-1.8354.858-3.0436.858-2.3427 0-4.3281-1.5845-5.0359-3.7136H.956055v2.3318C2.43536 15.9836 5.48182 18 9 18z" fill="#34A853"/>
+                  <path d="M3.96409 10.7136c-.18-.54-.28227-1.1154-.28227-1.7136 0-.5981.10227-1.1736.28227-1.7136V4.95455H.956364C.347727 6.16273 0 7.54545 0 9s.347727 2.8373.956364 4.0455l3.007726-2.3318z" fill="#FBBC05"/>
+                  <path d="M9 3.54545c1.3209 0 2.5077.45455 3.4418 1.34727l2.5827-2.58273C13.4609.93 11.4273 0 9 0 5.48182 0 2.43536 2.01636.956055 4.95455l3.007995 2.33182C4.67182 5.12909 6.65727 3.54545 9 3.54545z" fill="#EA4335"/>
+                </svg>
+              </span>
+              <span class="google-label">Créer avec Google</span>
+            </button>
+          </div>
+          <?php endif; ?>
 
           <div class="regi-link animation" style="--li:21; --S:7">
             <p>Déjà membre ? <br> <a href="#" class="SignInLink">Se connecter</a></p>

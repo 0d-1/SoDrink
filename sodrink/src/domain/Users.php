@@ -47,6 +47,9 @@ class Users
             'nom'             => (string)($u['nom'] ?? ''),
             'instagram'       => $u['instagram'] ?? null,
             'pass_hash'       => (string)($u['pass_hash'] ?? ''),
+            'email'           => $u['email'] ?? null,
+            'google_id'       => $u['google_id'] ?? null,
+            'auth_provider'   => $u['auth_provider'] ?? 'local',
             'role'            => in_array(($u['role'] ?? 'user'), ['user','admin'], true) ? $u['role'] : 'user',
             'avatar'          => $u['avatar'] ?? null,
             'created_at'      => date('c'),
@@ -61,7 +64,7 @@ class Users
         $cur = $this->store->findById($id);
         if (!$cur) return false;
 
-        foreach (['pseudo','prenom','nom','instagram','pass_hash','role','avatar','remember_tokens'] as $k) {
+        foreach (['pseudo','prenom','nom','instagram','pass_hash','role','avatar','remember_tokens','email','google_id','auth_provider'] as $k) {
             if (array_key_exists($k, $fields)) $cur[$k] = $fields[$k];
         }
         return $this->store->updateById($id, $cur);
@@ -105,6 +108,33 @@ class Users
             'instagram' => $u['instagram'] ?? null,
             'role'      => (string)($u['role'] ?? 'user'),
             'avatar'    => $u['avatar'] ?? null,
+            'email'     => $u['email'] ?? null,
+            'auth_provider' => $u['auth_provider'] ?? 'local',
         ];
+    }
+
+    /** Cherche par identifiant Google */
+    public function findByGoogleId(string $googleId): ?array
+    {
+        if ($googleId === '') return null;
+        foreach ($this->getAll() as $u) {
+            if (($u['google_id'] ?? '') === $googleId) {
+                return $u;
+            }
+        }
+        return null;
+    }
+
+    /** Cherche par email (insensible à la casse) */
+    public function findByEmail(string $email): ?array
+    {
+        $email = mb_strtolower($email);
+        if ($email === '') return null;
+        foreach ($this->getAll() as $u) {
+            if (mb_strtolower((string)($u['email'] ?? '')) === $email) {
+                return $u;
+            }
+        }
+        return null;
     }
 }
