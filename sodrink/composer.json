@@ -1,0 +1,11 @@
+{
+    "name": "sodrink/app",
+    "description": "SoDrink application",
+    "type": "project",
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
