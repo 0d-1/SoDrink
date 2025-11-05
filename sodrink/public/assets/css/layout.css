@@ -67,6 +67,15 @@ main.container{padding:1.25rem 0 2rem}
   padding:.25rem .6rem; border-radius:999px;
   background:transparent; border:1px solid transparent;
 }
+.user-chip-main{
+  display:inline-flex; align-items:center; gap:.5rem;
+  text-decoration:none; color:inherit;
+  border-radius:999px; padding:.1rem 0;
+}
+.user-chip-main:focus-visible{
+  outline:2px solid #1d4ed8;
+  outline-offset:2px;
+}
 .user-chip:hover{border-color:var(--border)}
 .user-chip .avatar{width:28px; height:28px; border-radius:50%; object-fit:cover}
 .user-chip .user-name{font-weight:600; color:#e6eaf6}

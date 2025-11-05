@@ -11,7 +11,9 @@ include __DIR__ . '/../views/partials/head.php';
 <?php include __DIR__ . '/../views/partials/header.php'; ?>
 <main class="container profile-container">
   <section class="card profile-hero" id="user-card">
-    <div id="pub-banner" class="profile-banner"></div>
+    <div class="profile-banner-wrapper" aria-hidden="true">
+      <div id="pub-banner" class="profile-banner"></div>
+    </div>
     <div class="profile-hero-body">
       <div class="profile-hero-avatar">
         <img id="pub-avatar" class="avatar-xl" src="<?= WEB_BASE ?>/assets/img/ui/avatar-default.svg" alt="Avatar">
