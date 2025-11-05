@@ -20,6 +20,7 @@ class Events
 
     public function create(array $e): array
     {
+        $max = isset($e['max_participants']) ? max(0, (int)$e['max_participants']) : 0;
         $rec = [
             'date'        => $e['date'],
             'lieu'        => $e['lieu'] ?? '',
@@ -27,6 +28,7 @@ class Events
             'description' => $e['description'] ?? '',
             'created_by'  => $e['created_by'] ?? null,
             'participants'=> [], // <= new
+            'max_participants' => $max > 0 ? $max : null,
             'created_at'  => date('c'),
         ];
         return $this->store->append($rec);
@@ -57,7 +59,16 @@ class Events
     public function addParticipant(int $eventId, int $userId): bool
     {
         $ev = $this->getById($eventId); if (!$ev) return false;
-        $ev['participants'] = array_values(array_unique(array_map('intval', array_merge($ev['participants'] ?? [], [$userId]))));
+        $participants = array_map('intval', $ev['participants'] ?? []);
+        if (in_array($userId, $participants, true)) {
+            return true; // déjà inscrit
+        }
+        $max = isset($ev['max_participants']) ? (int)$ev['max_participants'] : 0;
+        if ($max > 0 && count($participants) >= $max) {
+            return false; // complet
+        }
+        $participants[] = $userId;
+        $ev['participants'] = array_values($participants);
         return $this->store->updateById($eventId, $ev);
     }
     public function removeParticipant(int $eventId, int $userId): bool

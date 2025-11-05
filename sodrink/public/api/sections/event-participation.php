@@ -34,6 +34,16 @@ $uid = (int)$_SESSION['user_id'];
 if ($method === 'POST') {
     $id = (int)($_GET['event_id'] ?? 0);
     if ($id <= 0) json_error('event_id requis', 400);
+    $ev = $events->getById($id);
+    if (!$ev) json_error('Évènement introuvable', 404);
+    $participants = array_map('intval', $ev['participants'] ?? []);
+    if (!in_array($uid, $participants, true)) {
+        $max = isset($ev['max_participants']) ? (int)$ev['max_participants'] : 0;
+        if ($max > 0 && count($participants) >= $max) {
+            json_error('Soirée complète', 409);
+        }
+    }
+
     $ok = $events->addParticipant($id, $uid);
     if (!$ok) json_error('Impossible d’ajouter', 500);
 

@@ -287,14 +287,15 @@ main.container{padding:1.25rem 0 2rem}
 
 /* --------- Évènements --------- */
 .event-form{margin:.5rem 0 1rem}
-.event-form-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:.75rem}
-@media (max-width:800px){ .event-form-grid{grid-template-columns:1fr} }
+.event-form-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:.75rem}
+@media (max-width:800px){ .event-form-grid{grid-template-columns:repeat(auto-fit, minmax(140px,1fr))} }
 
 .event-list{display:grid; gap:.75rem}
 .event-item .event-head{display:flex; justify-content:space-between; gap:.75rem; align-items:flex-start}
 .event-title{margin-top:.25rem}
 .event-author a{color:var(--blue-300); text-decoration:none}
 .event-author a:hover{text-decoration:underline}
+.event-capacity{margin-top:.35rem; font-size:.9rem}
 
 /* Mini calendrier */
 .calendar{margin-top:.75rem}
@@ -309,6 +310,7 @@ main.container{padding:1.25rem 0 2rem}
 }
 .cal-empty{opacity:.15}
 .cal-mark{border-color:#1d4ed8; box-shadow:0 0 0 1px #1d4ed8 inset}
+.cal-today{border-color:#f59e0b; box-shadow:0 0 0 1px #f59e0b inset; font-weight:600}
 
 /* --------- Tables (admin) --------- */
 .table{width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:12px}
