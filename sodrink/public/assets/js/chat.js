@@ -19,6 +19,8 @@ let pendingTargetPseudo = CURRENT_URL.searchParams.get('u') || CURRENT_URL.searc
 let pendingConversationId = parseInt(CURRENT_URL.searchParams.get('conversation') || '', 10);
 if (Number.isNaN(pendingConversationId)) pendingConversationId = null;
 let initialTargetChecked = false;
+let composerPhotoFile = null;
+let composerPhotoUrl = '';
 
 const relationshipLabels = {
   single: 'Célibataire',
@@ -66,8 +68,14 @@ function participantsLabel(conv) {
 function snippetFrom(conv) {
   if (!conv.last_message) return 'Aucun message pour l’instant';
   const sender = conv.last_message.sender?.pseudo || (conv.last_message.sender_id === ME.id ? 'Moi' : 'Quelqu’un');
-  const content = conv.last_message.content || '';
-  const text = `${sender}: ${content}`.trim();
+  const attachment = conv.last_message.attachment;
+  let content = conv.last_message.content || '';
+  if (attachment) {
+    const label = attachment.type === 'image' ? '📷 Photo' : '📎 Pièce jointe';
+    content = content ? `${label} · ${content}` : label;
+  }
+  const summary = content.trim();
+  const text = summary ? `${sender}: ${summary}` : sender;
   return text.length > 80 ? `${text.slice(0, 77)}…` : text;
 }
 
@@ -165,13 +173,43 @@ function renderConversation() {
     const bubble = document.createElement('div');
     bubble.className = 'message ' + (mine ? 'message-out' : 'message-in');
     const author = mine ? 'Moi' : (msg.sender?.pseudo || 'Inconnu');
-    bubble.innerHTML = `
-      <div class="message-meta">
-        <span class="message-author">${escapeHtml(author)}</span>
-        <time datetime="${escapeHtml(msg.created_at || '')}">${escapeHtml(fullDateTime(msg.created_at))}</time>
-      </div>
-      <div class="message-body">${escapeHtml(msg.content || '')}</div>
-    `;
+    const meta = document.createElement('div');
+    meta.className = 'message-meta';
+    const authorSpan = document.createElement('span');
+    authorSpan.className = 'message-author';
+    authorSpan.textContent = author;
+    const timeEl = document.createElement('time');
+    if (msg.created_at) timeEl.setAttribute('datetime', msg.created_at);
+    timeEl.textContent = fullDateTime(msg.created_at);
+    meta.append(authorSpan, timeEl);
+    bubble.appendChild(meta);
+
+    const body = document.createElement('div');
+    body.className = 'message-body';
+    const hasAttachment = msg.attachment && msg.attachment.url;
+    if (hasAttachment) {
+      bubble.classList.add('has-attachment');
+      const figure = document.createElement('figure');
+      figure.className = 'message-media';
+      const img = document.createElement('img');
+      img.src = msg.attachment.url;
+      img.alt = 'Photo envoyée';
+      img.loading = 'lazy';
+      if (msg.attachment.width) img.width = msg.attachment.width;
+      if (msg.attachment.height) img.height = msg.attachment.height;
+      figure.appendChild(img);
+      body.appendChild(figure);
+      img.addEventListener('load', () => { scrollMessagesToBottom(); }, { once: true });
+    }
+
+    if (msg.content) {
+      const text = document.createElement('p');
+      text.className = 'message-text';
+      text.innerHTML = escapeHtml(msg.content).replace(/\n/g, '<br>');
+      body.appendChild(text);
+    }
+
+    bubble.appendChild(body);
     messagesContainer.appendChild(bubble);
   });
 }
@@ -216,20 +254,111 @@ function setupSendMessage() {
   const form = $('#chat-form');
   if (!form) return;
   const textarea = $('#chat-input');
+  const submitBtn = form.querySelector('button[type=submit]');
+  const attachBtn = $('#chat-attach');
+  const photoInput = $('#chat-photo-input');
+  const preview = $('#chat-photo-preview');
+  const previewImg = $('#chat-photo-thumb');
+  const removeBtn = $('#chat-photo-remove');
+
+  const updateTextareaSize = () => {
+    if (!textarea) return;
+    textarea.style.height = 'auto';
+    textarea.style.height = `${Math.min(160, textarea.scrollHeight)}px`;
+  };
+
+  const resetPhoto = () => {
+    if (composerPhotoUrl) {
+      URL.revokeObjectURL(composerPhotoUrl);
+      composerPhotoUrl = '';
+    }
+    composerPhotoFile = null;
+    if (previewImg) previewImg.src = '';
+    if (preview) preview.hidden = true;
+    if (photoInput) photoInput.value = '';
+  };
+
+  const showPhoto = (file) => {
+    if (!preview || !previewImg) return;
+    if (composerPhotoUrl) {
+      URL.revokeObjectURL(composerPhotoUrl);
+    }
+    composerPhotoFile = file;
+    composerPhotoUrl = URL.createObjectURL(file);
+    previewImg.src = composerPhotoUrl;
+    preview.hidden = false;
+  };
+
+  const updateSubmitState = () => {
+    if (!submitBtn) return;
+    const hasText = textarea?.value.trim().length > 0;
+    const hasPhoto = !!composerPhotoFile;
+    submitBtn.disabled = !hasText && !hasPhoto;
+  };
+
+  if (attachBtn && photoInput) {
+    attachBtn.addEventListener('click', () => {
+      if (attachBtn.disabled) return;
+      photoInput.click();
+    });
+    photoInput.addEventListener('change', () => {
+      const file = photoInput.files?.[0];
+      if (!file) {
+        resetPhoto();
+        updateSubmitState();
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        alert('Merci de sélectionner une image (JPEG, PNG ou WEBP).');
+        photoInput.value = '';
+        resetPhoto();
+        updateSubmitState();
+        return;
+      }
+      showPhoto(file);
+      updateSubmitState();
+    });
+  }
+
+  if (removeBtn) {
+    removeBtn.addEventListener('click', () => {
+      resetPhoto();
+      updateSubmitState();
+    });
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!activeConversation) return;
-    const content = textarea.value.trim();
-    if (!content) return;
+    const content = textarea.value.replace(/\r\n|\r/g, '\n').trim();
+    const hasPhoto = !!composerPhotoFile;
+    if (!hasPhoto && content === '') {
+      updateSubmitState();
+      return;
+    }
     textarea.disabled = true;
-    form.querySelector('button[type=submit]').disabled = true;
+    if (submitBtn) submitBtn.disabled = true;
+    if (attachBtn) attachBtn.disabled = true;
+    if (removeBtn) removeBtn.disabled = true;
+    if (photoInput) photoInput.disabled = true;
     try {
-      const { message } = await API.post('/api/chat/messages.php', {
-        conversation_id: activeConversation.id,
-        content,
-      });
+      let payload;
+      if (hasPhoto) {
+        const formData = new FormData();
+        formData.append('conversation_id', activeConversation.id);
+        formData.append('content', content);
+        formData.append('photo', composerPhotoFile);
+        payload = await API.postForm('/api/chat/messages.php', formData);
+      } else {
+        payload = await API.post('/api/chat/messages.php', {
+          conversation_id: activeConversation.id,
+          content,
+        });
+      }
+      const { message } = payload;
       messages.push(message);
       textarea.value = '';
+      resetPhoto();
       renderConversation();
       scrollMessagesToBottom();
       loadConversations();
@@ -237,15 +366,24 @@ function setupSendMessage() {
       alert(err.message);
     } finally {
       textarea.disabled = false;
-      form.querySelector('button[type=submit]').disabled = false;
+      if (submitBtn) submitBtn.disabled = false;
+      if (attachBtn) attachBtn.disabled = false;
+      if (photoInput) photoInput.disabled = false;
+      if (removeBtn) removeBtn.disabled = false;
       textarea.focus();
+      updateTextareaSize();
+      updateSubmitState();
     }
   });
 
   textarea.addEventListener('input', () => {
-    textarea.style.height = 'auto';
-    textarea.style.height = `${Math.min(160, textarea.scrollHeight)}px`;
+    updateTextareaSize();
+    updateSubmitState();
   });
+
+  resetPhoto();
+  updateTextareaSize();
+  updateSubmitState();
 }
 
 // ===== Nouvelle conversation =====

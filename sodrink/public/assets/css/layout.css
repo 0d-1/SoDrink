@@ -487,10 +487,19 @@ main.container{padding:1.25rem 0 2rem}
 .message.message-out{align-self:flex-end; border-bottom-right-radius:4px; background:linear-gradient(135deg,var(--blue-500),var(--blue-700)); color:#fff;}
 .message-meta{display:flex; justify-content:space-between; gap:.5rem; font-size:.8rem; color:var(--muted); margin-bottom:.25rem;}
 .message-out .message-meta{color:rgba(255,255,255,.85);}
-.message-body{white-space:pre-line; font-size:.95rem;}
+.message-body{display:flex; flex-direction:column; gap:.4rem; font-size:.95rem; white-space:normal;}
+.message-text{margin:0; white-space:pre-line;}
+.message-media{margin:0; border-radius:14px; overflow:hidden; background:rgba(15,23,42,.6);}
+.message-media img{display:block; width:100%; height:auto; max-width:260px;}
+.message.has-attachment{padding:.5rem;}
 .chat-composer{display:flex; gap:.75rem; align-items:flex-end; border:1px solid rgba(148,163,184,.18); border-radius:16px; padding:.6rem .75rem; background:rgba(11,18,32,.8);}
-.chat-composer textarea{flex:1; resize:none; min-height:42px; max-height:160px; background:transparent; border:none; outline:none; color:inherit; font-family:inherit; font-size:1rem;}
-.chat-composer button{align-self:flex-end;}
+.chat-composer .chat-composer-field{flex:1; display:flex; flex-direction:column; gap:.5rem;}
+.chat-composer textarea{flex:1; resize:none; min-height:42px; max-height:160px; background:transparent; border:none; outline:none; color:inherit; font-family:inherit; font-size:1rem; width:100%;}
+.chat-composer > button{align-self:flex-end;}
+.chat-composer .chat-attach{min-width:42px; padding:.45rem .65rem; font-size:1.1rem; line-height:1; display:flex; align-items:center; justify-content:center;}
+.chat-photo-preview{display:inline-flex; align-items:center; gap:.5rem; padding:.45rem .6rem; border-radius:12px; border:1px solid rgba(59,130,246,.35); background:rgba(15,23,42,.85); max-width:240px;}
+.chat-photo-preview img{width:64px; height:64px; object-fit:cover; border-radius:8px;}
+.chat-photo-preview .btn{margin-left:auto;}
 
 .conversation-modal{max-width:560px;}
 .conversation-form{display:grid; gap:.75rem;}

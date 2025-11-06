@@ -46,8 +46,16 @@ include __DIR__ . '/../views/partials/head.php';
         </header>
         <div class="chat-messages" id="chat-messages"></div>
         <form class="chat-composer" id="chat-form" autocomplete="off">
-          <textarea name="content" id="chat-input" rows="1" placeholder="Écrire un message…" required></textarea>
+          <button class="btn btn-outline chat-attach" type="button" id="chat-attach" aria-label="Envoyer une photo">📷</button>
+          <div class="chat-composer-field">
+            <div class="chat-photo-preview" id="chat-photo-preview" hidden>
+              <img src="" alt="Aperçu de la photo sélectionnée" id="chat-photo-thumb">
+              <button class="btn btn-sm btn-outline" type="button" id="chat-photo-remove" aria-label="Retirer la photo">✕</button>
+            </div>
+            <textarea name="content" id="chat-input" rows="1" placeholder="Écrire un message…"></textarea>
+          </div>
           <button class="btn btn-primary" type="submit">Envoyer</button>
+          <input type="file" name="photo" id="chat-photo-input" accept="image/*" hidden>
         </form>
       </div>
     </section>

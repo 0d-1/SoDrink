@@ -68,7 +68,7 @@ class Conversations
         return $this->store->updateById($id, $current);
     }
 
-    public function addMessage(int $conversationId, int $senderId, string $content): ?array
+    public function addMessage(int $conversationId, int $senderId, string $content = '', ?array $attachment = null): ?array
     {
         $conversation = $this->store->findById($conversationId);
         if (!$conversation) {
@@ -82,6 +82,9 @@ class Conversations
             'content'    => $content,
             'created_at' => date('c'),
         ];
+        if ($attachment) {
+            $message['attachment'] = $attachment;
+        }
         $messages[] = $message;
         $conversation['messages'] = $messages;
         $conversation['last_message_at'] = $message['created_at'];
