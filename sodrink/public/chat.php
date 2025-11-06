@@ -42,7 +42,10 @@ include __DIR__ . '/../views/partials/head.php';
             <h2 id="chat-title">—</h2>
             <p class="muted" id="chat-participants">—</p>
           </div>
-          <button class="btn btn-sm btn-outline" id="chat-refresh" aria-label="Rafraîchir la conversation">↻</button>
+          <div class="chat-room-actions">
+            <a class="btn btn-sm btn-outline" id="chat-profile-link" href="#" hidden>Voir le profil</a>
+            <button class="btn btn-sm btn-outline" id="chat-refresh" aria-label="Rafraîchir la conversation">↻</button>
+          </div>
         </header>
         <div class="chat-messages" id="chat-messages"></div>
         <form class="chat-composer" id="chat-form" autocomplete="off">
