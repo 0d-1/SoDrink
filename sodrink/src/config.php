@@ -33,10 +33,12 @@ function env(string $key, mixed $default = null): mixed {
 const BASE_PATH    = __DIR__ . '/..';
 const PUBLIC_PATH  = BASE_PATH . '/public';
 const DATA_PATH    = BASE_PATH . '/data';
-const UPLOADS_PATH = PUBLIC_PATH . '/uploads';
-const AVATARS_PATH = UPLOADS_PATH . '/avatars';
-const BANNERS_PATH = UPLOADS_PATH . '/banners';
-const GALLERY_PATH = UPLOADS_PATH . '/gallery';
+const UPLOADS_PATH    = PUBLIC_PATH . '/uploads';
+const AVATARS_PATH    = UPLOADS_PATH . '/avatars';
+const BANNERS_PATH    = UPLOADS_PATH . '/banners';
+const GALLERY_PATH    = UPLOADS_PATH . '/gallery';
+const CHAT_MEDIA_PATH = UPLOADS_PATH . '/chat';
+const CHAT_MEDIA_WEB  = '/uploads/chat';
 
 // App
 const APP_NAME = 'SoDrink';

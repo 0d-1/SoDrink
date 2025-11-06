@@ -68,7 +68,7 @@ if ($base === '/' || $base === '.') $base = '';
 if (!defined('WEB_BASE')) define('WEB_BASE', $base);
 
 // Création des dossiers nécessaires
-foreach ([DATA_PATH, UPLOADS_PATH, AVATARS_PATH, BANNERS_PATH, GALLERY_PATH] as $dir) {
+foreach ([DATA_PATH, UPLOADS_PATH, AVATARS_PATH, BANNERS_PATH, GALLERY_PATH, CHAT_MEDIA_PATH] as $dir) {
     if (!is_dir($dir)) @mkdir($dir, 0775, true);
 }
 

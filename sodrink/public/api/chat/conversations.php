@@ -17,7 +17,31 @@ $repo = new Conversations();
 $userRepo = new Users();
 $meId = (int)($_SESSION['user_id'] ?? 0);
 
-$hydrate = static function (array $conv) use ($userRepo): array {
+$formatAttachment = static function (?array $attachment): ?array {
+    if (!is_array($attachment) || empty($attachment['type'])) {
+        return null;
+    }
+    $type = (string)$attachment['type'];
+    if ($type !== 'image') {
+        return null;
+    }
+    $path = (string)($attachment['path'] ?? '');
+    if ($path === '') {
+        return null;
+    }
+    $url = (defined('WEB_BASE') ? WEB_BASE : '') . $path;
+    return [
+        'type'   => 'image',
+        'path'   => $path,
+        'url'    => $url,
+        'mime'   => $attachment['mime'] ?? null,
+        'width'  => isset($attachment['width']) ? (int)$attachment['width'] : null,
+        'height' => isset($attachment['height']) ? (int)$attachment['height'] : null,
+        'size'   => isset($attachment['size']) ? (int)$attachment['size'] : null,
+    ];
+};
+
+$hydrate = static function (array $conv) use ($userRepo, $formatAttachment): array {
     $participants = [];
     foreach ($conv['participants'] ?? [] as $participantId) {
         $user = $userRepo->getById((int)$participantId);
@@ -36,6 +60,7 @@ $hydrate = static function (array $conv) use ($userRepo): array {
             'sender'     => $sender ? Users::toPublic($sender) : null,
             'content'    => (string)($last['content'] ?? ''),
             'created_at' => $last['created_at'] ?? null,
+            'attachment' => $formatAttachment($last['attachment'] ?? null),
         ];
     }
 

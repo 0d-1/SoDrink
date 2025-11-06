@@ -4,10 +4,12 @@ declare(strict_types=1);
 require_once __DIR__ . '/../_bootstrap.php';
 require_once $GLOBALS['SODRINK_ROOT'] . '/src/domain/Conversations.php';
 require_once $GLOBALS['SODRINK_ROOT'] . '/src/domain/Notifications.php';
+require_once $GLOBALS['SODRINK_ROOT'] . '/src/storage/FileUpload.php';
 
 use SoDrink\Domain\Conversations;
 use SoDrink\Domain\Users;
 use SoDrink\Domain\Notifications;
+use SoDrink\Storage\FileUpload;
 use function SoDrink\Security\require_csrf;
 use function SoDrink\Security\require_login;
 
@@ -38,7 +40,31 @@ $hydrateConversation = static function (array $conv) use ($userRepo): array {
     ];
 };
 
-$hydrateMessage = static function (array $message) use ($userRepo): array {
+$formatAttachment = static function (?array $attachment): ?array {
+    if (!is_array($attachment) || empty($attachment['type'])) {
+        return null;
+    }
+    $type = (string)$attachment['type'];
+    if ($type !== 'image') {
+        return null;
+    }
+    $path = (string)($attachment['path'] ?? '');
+    if ($path === '') {
+        return null;
+    }
+    $url = (defined('WEB_BASE') ? WEB_BASE : '') . $path;
+    return [
+        'type'   => 'image',
+        'path'   => $path,
+        'url'    => $url,
+        'mime'   => $attachment['mime'] ?? null,
+        'width'  => isset($attachment['width']) ? (int)$attachment['width'] : null,
+        'height' => isset($attachment['height']) ? (int)$attachment['height'] : null,
+        'size'   => isset($attachment['size']) ? (int)$attachment['size'] : null,
+    ];
+};
+
+$hydrateMessage = static function (array $message) use ($userRepo, $formatAttachment): array {
     $senderData = $message['sender'] ?? null;
     if ($senderData && isset($senderData['id'])) {
         $sender = $senderData;
@@ -52,6 +78,7 @@ $hydrateMessage = static function (array $message) use ($userRepo): array {
         'sender'     => $sender,
         'content'    => (string)($message['content'] ?? ''),
         'created_at' => $message['created_at'] ?? null,
+        'attachment' => $formatAttachment($message['attachment'] ?? null),
     ];
 };
 
@@ -78,29 +105,80 @@ if ($method === 'GET') {
 
 if ($method === 'POST') {
     require_csrf();
-    $raw = file_get_contents('php://input');
-    $data = json_decode($raw, true);
-    if (!is_array($data)) {
-        json_error('Corps JSON invalide', 400);
-    }
+    $hasFile = !empty($_FILES);
+    $conversationId = 0;
+    $content = '';
+    $attachment = null;
 
-    $conversationId = (int)($data['conversation_id'] ?? 0);
-    if ($conversationId <= 0) {
-        json_error('Conversation invalide', 422);
+    if ($hasFile) {
+        $conversationId = (int)($_POST['conversation_id'] ?? 0);
+        if ($conversationId <= 0) {
+            json_error('Conversation invalide', 422);
+        }
+        $content = (string)($_POST['content'] ?? '');
+        $content = str_replace(["\r\n", "\r"], "\n", $content);
+        $content = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $content);
+        $content = trim($content);
+        $content = mb_substr($content, 0, 1000);
+
+        $photo = $_FILES['photo'] ?? null;
+        if (!$photo || ($photo['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+            json_error('Image manquante', 422);
+        }
+        $maxSize = defined('MAX_UPLOAD_MB_RUNTIME') ? MAX_UPLOAD_MB_RUNTIME : MAX_UPLOAD_MB;
+        try {
+            $upload = FileUpload::fromImage($photo, CHAT_MEDIA_PATH, $maxSize, ALLOWED_IMAGE_MIME);
+        } catch (\Throwable $e) {
+            json_error($e->getMessage(), 422);
+        }
+        $relative = CHAT_MEDIA_WEB . '/' . $upload['filename'];
+        $attachment = [
+            'type' => 'image',
+            'path' => $relative,
+            'mime' => $upload['mime'] ?? null,
+            'size' => (int)($upload['size'] ?? 0),
+        ];
+        $dimensions = @getimagesize($upload['path']);
+        if (is_array($dimensions)) {
+            $attachment['width'] = (int)($dimensions[0] ?? 0) ?: null;
+            $attachment['height'] = (int)($dimensions[1] ?? 0) ?: null;
+        }
+        if ($content === '' && $attachment === null) {
+            json_error('Message vide', 422);
+        }
+    } else {
+        $raw = file_get_contents('php://input');
+        $data = json_decode($raw, true);
+        if (!is_array($data)) {
+            json_error('Corps JSON invalide', 400);
+        }
+
+        $conversationId = (int)($data['conversation_id'] ?? 0);
+        if ($conversationId <= 0) {
+            json_error('Conversation invalide', 422);
+        }
+
+        $content = (string)($data['content'] ?? '');
+        $content = str_replace(["\r\n", "\r"], "\n", $content);
+        $content = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $content);
+        $content = trim($content);
+        if ($content === '') {
+            json_error('Message vide', 422);
+        }
+        $content = mb_substr($content, 0, 1000);
     }
 
     $conv = $ensureAccess($repo->getById($conversationId));
 
-    $content = (string)($data['content'] ?? '');
-    $content = str_replace(["\r\n", "\r"], "\n", $content);
-    $content = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $content);
-    $content = trim($content);
-    if ($content === '') {
+    if ($hasFile && !$attachment) {
+        json_error('Image manquante', 422);
+    }
+
+    if ($attachment === null && $content === '') {
         json_error('Message vide', 422);
     }
-    $content = mb_substr($content, 0, 1000);
 
-    $message = $repo->addMessage($conversationId, $meId, $content);
+    $message = $repo->addMessage($conversationId, $meId, $content, $attachment);
     if (!$message) {
         json_error('Conversation introuvable', 404);
     }
