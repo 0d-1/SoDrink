@@ -166,6 +166,27 @@ function renderConversation() {
   room.hidden = false;
   $('#chat-title').textContent = conversationName(activeConversation);
   $('#chat-participants').textContent = participantsLabel(activeConversation);
+  const profileLink = $('#chat-profile-link');
+  if (profileLink) {
+    const others = (activeConversation.participants || []).filter((p) => p.id !== ME.id);
+    if (others.length === 1 && others[0]) {
+      const target = others[0];
+      const pseudo = target.pseudo || '';
+      const targetUrl = pseudo ? `${BASE}/user.php?u=${encodeURIComponent(pseudo)}` : `${BASE}/user.php?id=${encodeURIComponent(target.id || '')}`;
+      profileLink.href = targetUrl;
+      profileLink.hidden = false;
+      profileLink.textContent = 'Voir le profil';
+      if (pseudo) {
+        profileLink.setAttribute('aria-label', `Consulter le profil de ${pseudo}`);
+        profileLink.title = `Profil de ${pseudo}`;
+      } else {
+        profileLink.setAttribute('aria-label', 'Consulter le profil de ce participant');
+        profileLink.title = 'Profil du participant';
+      }
+    } else {
+      profileLink.hidden = true;
+    }
+  }
   const messagesContainer = $('#chat-messages');
   messagesContainer.innerHTML = '';
   messages.forEach((msg) => {

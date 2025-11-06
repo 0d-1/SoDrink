@@ -70,6 +70,12 @@ btn?.addEventListener('click', async ()=>{
 });
 
 // ---- Rendu liste + badge
+function applyDropdownLayout(){
+  if (!dd) return;
+  if (isSmallScreen()) { dd.classList.add('notif-mobile'); }
+  else { dd.classList.remove('notif-mobile'); }
+}
+
 function updateBadge(unread){
   if (!badge) return;
   if (unread > 0) { badge.textContent = unread; badge.hidden = false; }
@@ -171,10 +177,7 @@ async function boot(){
   await ensurePermissionOnce();     // demande une fois (silencieux si déjà répondu)
   await render();                   // remplit le dropdown + badge
   // Adapter la dropdown aux mobiles sans toucher au CSS global
-  if (dd) {
-    if (isSmallScreen()) { dd.style.width = '95vw'; dd.style.maxWidth = '95vw'; dd.style.right = '2.5vw'; }
-    else { dd.style.removeProperty('width'); dd.style.removeProperty('max-width'); dd.style.removeProperty('right'); }
-  }
+  applyDropdownLayout();
   if (!startStream()) {
     startPolling();
   }
@@ -236,8 +239,4 @@ function startStream(){
 boot();
 
 // Adapter dynamiquement si on rotate le téléphone / redimensionne
-window.addEventListener('resize', ()=>{
-  if (!dd) return;
-  if (isSmallScreen()) { dd.style.width='95vw'; dd.style.maxWidth='95vw'; dd.style.right='2.5vw'; }
-  else { dd.style.removeProperty('width'); dd.style.removeProperty('max-width'); dd.style.removeProperty('right'); }
-});
+window.addEventListener('resize', applyDropdownLayout);
