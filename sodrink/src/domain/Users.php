@@ -41,6 +41,11 @@ class Users
     /** Crée un utilisateur (retour = enregistrement complet avec id) */
     public function create(array $u): array
     {
+        $role = $u['role'] ?? 'user';
+        if (!in_array($role, ['user', 'admin'], true)) {
+            $role = 'user';
+        }
+
         $rec = [
             'pseudo'          => (string)($u['pseudo'] ?? ''),
             'prenom'          => (string)($u['prenom'] ?? ''),
@@ -55,7 +60,7 @@ class Users
             'email'           => $u['email'] ?? null,
             'google_id'       => $u['google_id'] ?? null,
             'auth_provider'   => $u['auth_provider'] ?? 'local',
-            'role'            => in_array(($u['role'] ?? 'user'), ['user','admin'], true) ? $u['role'] : 'user',
+            'role'            => $role,
             'avatar'          => $u['avatar'] ?? null,
             'banner'          => $u['banner'] ?? null,
             'created_at'      => date('c'),
