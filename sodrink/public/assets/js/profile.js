@@ -17,6 +17,9 @@ let currentUser = null;
 let currentBanner = null;
 let savedBanner = null;
 let currentAvatar = null;
+let uclAutomations = [];
+let editingAutomationId = null;
+let editingAutomationHasPassword = false;
 
 const NOTIF_KEYS = ['messages', 'events', 'gallery', 'torpille', 'announcements'];
 
@@ -399,12 +402,174 @@ function bindNotificationsForm() {
   });
 }
 
+function setUclStatus(message = '', isError = false) {
+  const el = $('#ucl-automation-status');
+  if (!el) return;
+  el.textContent = message;
+  el.style.color = isError && message ? '#b91c1c' : '';
+}
+
+function renderUclAutomations() {
+  const table = $('#ucl-automation-table');
+  const tbody = $('#ucl-automation-table tbody');
+  const empty = $('#ucl-automation-empty');
+  if (!table || !tbody || !empty) return;
+
+  tbody.innerHTML = '';
+  if (!uclAutomations.length) {
+    table.style.display = 'none';
+    empty.hidden = false;
+    return;
+  }
+
+  table.style.display = '';
+  empty.hidden = true;
+
+  uclAutomations.forEach((item) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${escapeHtml(item.sport || '')}</strong><br><span class="muted">${escapeHtml(item.ucl_username || '')}</span></td>
+      <td>${escapeHtml(item.session_date || '')}</td>
+      <td>${escapeHtml(item.time_slot || '')}</td>
+      <td>${escapeHtml(item.campus || '')}</td>
+      <td>${item.weekly ? 'Oui' : 'Non'}</td>
+      <td class="inline" style="gap:.35rem">
+        <button type="button" class="btn btn-sm" data-edit="${item.id}">Modifier</button>
+        <button type="button" class="btn btn-sm danger" data-delete="${item.id}">Supprimer</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function startEditAutomation(item) {
+  const form = $('#ucl-automation-form');
+  if (!form || !item) return;
+  editingAutomationId = item.id;
+  editingAutomationHasPassword = Boolean(item.has_password);
+  const hiddenId = form.querySelector('input[name="id"]');
+  if (hiddenId) hiddenId.value = item.id;
+  form.ucl_username.value = item.ucl_username || '';
+  form.ucl_password.value = '';
+  form.sport.value = item.sport || '';
+  form.campus.value = item.campus || '';
+  form.session_date.value = item.session_date || '';
+  form.time_slot.value = item.time_slot || '';
+  form.weekly.checked = Boolean(item.weekly);
+  form.headless.checked = Boolean(item.headless);
+  setUclStatus(`Modification de l’automatisation « ${item.sport} » (ID ${item.id}).`);
+  form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function resetUclForm() {
+  const form = $('#ucl-automation-form');
+  if (!form) return;
+  editingAutomationId = null;
+  editingAutomationHasPassword = false;
+  const hiddenId = form.querySelector('input[name="id"]');
+  if (hiddenId) hiddenId.value = '';
+  form.ucl_username.value = '';
+  form.ucl_password.value = '';
+  form.sport.value = '';
+  form.campus.value = '';
+  form.session_date.value = '';
+  form.time_slot.value = '';
+  if (form.weekly) form.weekly.checked = false;
+  if (form.headless) form.headless.checked = true;
+  setUclStatus('');
+}
+
+async function loadUclAutomations() {
+  try {
+    const { automations } = await API.get('/api/uclsport/automations.php');
+    uclAutomations = Array.isArray(automations) ? automations : [];
+    renderUclAutomations();
+  } catch (err) {
+    setUclStatus(err.message || 'Impossible de charger les automatisations.', true);
+  }
+}
+
+function bindUclAutomations() {
+  const form = $('#ucl-automation-form');
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const body = {
+      ucl_username: form.ucl_username.value.trim(),
+      sport: form.sport.value.trim(),
+      campus: form.campus.value.trim(),
+      session_date: form.session_date.value.trim(),
+      time_slot: form.time_slot.value.trim(),
+      weekly: Boolean(form.weekly.checked),
+      headless: Boolean(form.headless.checked),
+    };
+    const pwd = form.ucl_password.value;
+    if (pwd && pwd.trim()) {
+      body.ucl_password = pwd.trim();
+    }
+
+    try {
+      if (editingAutomationId) {
+        if (!pwd && !editingAutomationHasPassword) {
+          setUclStatus('Ajoute un mot de passe pour cette automatisation.', true);
+          return;
+        }
+        await API.put(`/api/uclsport/automations.php?id=${editingAutomationId}`, body);
+        setUclStatus('Automatisation mise à jour.');
+      } else {
+        await API.post('/api/uclsport/automations.php', body);
+        setUclStatus('Automatisation enregistrée.');
+      }
+      resetUclForm();
+      await loadUclAutomations();
+    } catch (err) {
+      setUclStatus(err.message || 'Erreur lors de l’enregistrement.', true);
+    }
+  });
+
+  form.addEventListener('reset', (e) => {
+    e.preventDefault();
+    resetUclForm();
+  });
+
+  const table = $('#ucl-automation-table');
+  table?.addEventListener('click', async (e) => {
+    const editBtn = e.target.closest('button[data-edit]');
+    const deleteBtn = e.target.closest('button[data-delete]');
+    if (editBtn) {
+      const id = Number(editBtn.getAttribute('data-edit'));
+      const item = uclAutomations.find((a) => Number(a.id) === id);
+      if (item) startEditAutomation(item);
+    }
+    if (deleteBtn) {
+      const id = Number(deleteBtn.getAttribute('data-delete'));
+      if (!id) return;
+      const confirmDelete = window.confirm('Supprimer cette automatisation ?');
+      if (!confirmDelete) return;
+      try {
+        await API.del(`/api/uclsport/automations.php?id=${id}`);
+        setUclStatus('Automatisation supprimée.');
+        if (editingAutomationId === id) {
+          resetUclForm();
+        }
+        await loadUclAutomations();
+      } catch (err) {
+        setUclStatus(err.message || 'Suppression impossible.', true);
+      }
+    }
+  });
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   renderLinks([]);
+  renderUclAutomations();
   loadMe();
   bindProfileSave();
   bindAvatar();
   bindBanner();
   bindAddLink();
   bindNotificationsForm();
+  bindUclAutomations();
+  loadUclAutomations();
 });

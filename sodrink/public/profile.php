@@ -165,6 +165,70 @@ include __DIR__ . '/../views/partials/head.php';
         </div>
       </form>
     </section>
+
+    <section class="card profile-card profile-uclsport-card" id="profile-uclsport">
+      <h2>Automatisation UCL Sport</h2>
+      <p class="muted">Enregistre une automatisation pour réserver automatiquement tes séances sportives UCLouvain avec le script Selenium.</p>
+      <div id="ucl-automation-status" class="muted" aria-live="polite"></div>
+      <div class="ucl-automation-table-wrapper">
+        <table class="table" id="ucl-automation-table">
+          <thead>
+            <tr>
+              <th>Sport</th>
+              <th>Date</th>
+              <th>Créneau</th>
+              <th>Campus</th>
+              <th>Hebdo</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p class="muted" id="ucl-automation-empty">Aucune automatisation enregistrée pour le moment.</p>
+      </div>
+      <form id="ucl-automation-form" class="form" autocomplete="off">
+        <input type="hidden" name="id" value="">
+        <div class="form-grid">
+          <label>Identifiant UCLouvain
+            <input type="text" name="ucl_username" maxlength="120" required>
+          </label>
+          <label>Mot de passe UCLouvain
+            <input type="password" name="ucl_password" maxlength="120" placeholder="••••••••">
+            <small class="muted">Laisse vide pour conserver le mot de passe stocké. Il est chiffré côté serveur.</small>
+          </label>
+        </div>
+        <div class="form-grid">
+          <label>Sport à réserver
+            <input type="text" name="sport" maxlength="120" required placeholder="Badminton, Fitness, ...">
+          </label>
+          <label>Campus
+            <input type="text" name="campus" maxlength="120" placeholder="Louvain-la-Neuve">
+          </label>
+        </div>
+        <div class="form-grid">
+          <label>Date de la séance (jj/mm)
+            <input type="text" name="session_date" maxlength="5" required placeholder="07/01">
+          </label>
+          <label>Créneau (HH:MM-HH:MM)
+            <input type="text" name="time_slot" maxlength="11" required placeholder="21:30-23:00">
+          </label>
+        </div>
+        <div class="inline" style="gap:.75rem; align-items:center; flex-wrap:wrap">
+          <label class="inline" style="gap:.35rem; align-items:center">
+            <input type="checkbox" name="weekly">
+            <span>Relancer automatiquement chaque semaine</span>
+          </label>
+          <label class="inline" style="gap:.35rem; align-items:center">
+            <input type="checkbox" name="headless" checked>
+            <span>Exécuter le navigateur en mode discret (headless)</span>
+          </label>
+        </div>
+        <div class="form-actions" style="gap:.5rem">
+          <button class="btn btn-primary" type="submit">Enregistrer l’automatisation</button>
+          <button class="btn btn-outline" type="reset" id="ucl-automation-reset">Réinitialiser le formulaire</button>
+        </div>
+      </form>
+    </section>
   </div>
 </main>
 <?php include __DIR__ . '/../views/partials/footer.php'; ?>
