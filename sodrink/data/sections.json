@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1,
+        "key": "next-event",
+        "title": "Prochaine Soir\u00e9e",
+        "enabled": true,
+        "order": 1
+    },
+    {
+        "id": 2,
+        "key": "gallery",
+        "title": "Galerie",
+        "enabled": true,
+        "order": 2
+    },
+    {
+        "id": 3,
+        "key": "torpille",
+        "title": "Torpille",
+        "enabled": true,
+        "order": 3
+    }
+]
