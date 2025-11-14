@@ -19,6 +19,7 @@ SoDrink est une application web communautaire qui aide un groupe d'amis à organ
 - **Notifications** : système de notifications persistantes par utilisateur avec compteur d'éléments non lus et marquage en lecture.【F:sodrink/src/domain/Notifications.php†L9-L56】
 - **Gestion des sections de la page d'accueil** : activation/désactivation et tri des blocs (prochain événement, galerie, torpille) à partir d'un fichier JSON modifiable depuis l'interface admin.【F:sodrink/public/index.php†L15-L68】【F:sodrink/src/domain/Sections.php†L9-L48】
 - **Jeu de la torpille** : workflow complet pour passer la torpille d'un membre à l'autre avec upload d'une photo estampillée et suivi de l'état courant.【F:sodrink/src/domain/Torpille.php†L9-L112】
+- **Automatisation UCL Sport** : interface profil pour stocker (de façon chiffrée) ses identifiants UCLouvain et configurer les réservations à lancer par le script Selenium partagé.【F:sodrink/public/profile.php†L118-L189】【F:sodrink/public/assets/js/profile.js†L16-L277】【F:sodrink/public/api/uclsport/automations.php†L1-L152】【F:sodrink/src/domain/UclSportAutomations.php†L1-L140】
 
 ## Architecture
 - `public/` : points d'entrée HTTP (pages, API RESTful et assets statiques) utilisés par le serveur web.【F:sodrink/public/index.php†L1-L74】
@@ -44,6 +45,7 @@ Au premier lancement, le bootstrap crée automatiquement les répertoires `data/
 Les variables d'environnement peuvent être définies via un fichier `sodrink/config/.env` (optionnel). Les clés supportées incluent `APP_ENV`, `APP_TZ` et `MAX_UPLOAD_MB`; elles surchargent les constantes par défaut définies dans `src/config.php`.【F:sodrink/src/config.php†L7-L59】
 
 - **Connexion Google** : définissez `GOOGLE_CLIENT_ID` et `GOOGLE_CLIENT_SECRET` (et éventuellement `GOOGLE_REDIRECT_URI`) pour activer les boutons "Continuer avec Google" sur la page de connexion. Sans ces variables, l'option ne s'affiche pas.【F:sodrink/src/security/google.php†L12-L61】【F:sodrink/public/login.php†L9-L93】
+- **Automatisation UCL Sport** : ajoutez une clé secrète `UCLSPORT_SECRET_KEY` (32+ caractères recommandés) dans `config/.env` pour chiffrer les mots de passe UCLouvain enregistrés dans les automatisations. Sans cette clé, l'enregistrement est bloqué côté serveur.【F:sodrink/src/utils/secrets.php†L8-L59】【F:sodrink/public/api/uclsport/automations.php†L8-L111】
 
 ## Lancement en développement
 Pour tester l'application en local, utilisez le serveur PHP intégré :
