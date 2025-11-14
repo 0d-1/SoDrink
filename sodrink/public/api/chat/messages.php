@@ -110,11 +110,14 @@ if ($method === 'POST') {
     $content = '';
     $attachment = null;
 
+    $conv = null;
+
     if ($hasFile) {
         $conversationId = (int)($_POST['conversation_id'] ?? 0);
         if ($conversationId <= 0) {
             json_error('Conversation invalide', 422);
         }
+        $conv = $ensureAccess($repo->getById($conversationId));
         $content = (string)($_POST['content'] ?? '');
         $content = str_replace(["\r\n", "\r"], "\n", $content);
         $content = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $content);
@@ -158,6 +161,8 @@ if ($method === 'POST') {
             json_error('Conversation invalide', 422);
         }
 
+        $conv = $ensureAccess($repo->getById($conversationId));
+
         $content = (string)($data['content'] ?? '');
         $content = str_replace(["\r\n", "\r"], "\n", $content);
         $content = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $content);
@@ -168,7 +173,9 @@ if ($method === 'POST') {
         $content = mb_substr($content, 0, 1000);
     }
 
-    $conv = $ensureAccess($repo->getById($conversationId));
+    if ($conv === null) {
+        $conv = $ensureAccess($repo->getById($conversationId));
+    }
 
     if ($hasFile && !$attachment) {
         json_error('Image manquante', 422);
