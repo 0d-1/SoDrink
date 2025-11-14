@@ -1,1 +1,157 @@
-[]
+[
+    {
+        "participants": [
+            5,
+            2
+        ],
+        "created_by": 2,
+        "created_at": "2025-11-05T21:34:11+01:00",
+        "updated_at": "2025-11-05T21:35:13+01:00",
+        "last_message_at": "2025-11-05T21:35:13+01:00",
+        "title": null,
+        "messages": [
+            {
+                "id": 1,
+                "sender_id": 2,
+                "content": "Wesh",
+                "created_at": "2025-11-05T21:34:21+01:00"
+            },
+            {
+                "id": 2,
+                "sender_id": 2,
+                "content": "wesh",
+                "created_at": "2025-11-05T21:35:13+01:00"
+            }
+        ],
+        "id": 1
+    },
+    {
+        "participants": [
+            2,
+            1
+        ],
+        "created_by": 1,
+        "created_at": "2025-11-05T21:42:51+01:00",
+        "updated_at": "2025-11-05T21:44:12+01:00",
+        "last_message_at": "2025-11-05T21:44:12+01:00",
+        "title": null,
+        "messages": [
+            {
+                "id": 1,
+                "sender_id": 1,
+                "content": "J'ai un gros zizi",
+                "created_at": "2025-11-05T21:43:05+01:00"
+            },
+            {
+                "id": 2,
+                "sender_id": 2,
+                "content": "T'as pas vu le mien sale fou",
+                "created_at": "2025-11-05T21:44:12+01:00"
+            }
+        ],
+        "id": 2
+    },
+    {
+        "participants": [
+            10,
+            2
+        ],
+        "created_by": 2,
+        "created_at": "2025-11-06T11:50:59+01:00",
+        "updated_at": "2025-11-06T11:52:57+01:00",
+        "last_message_at": "2025-11-06T11:52:57+01:00",
+        "title": null,
+        "messages": [
+            {
+                "id": 1,
+                "sender_id": 2,
+                "content": "Couloucoucou",
+                "created_at": "2025-11-06T11:52:57+01:00"
+            }
+        ],
+        "id": 3
+    },
+    {
+        "participants": [
+            9,
+            2
+        ],
+        "created_by": 2,
+        "created_at": "2025-11-06T11:53:33+01:00",
+        "updated_at": "2025-11-06T11:53:33+01:00",
+        "last_message_at": null,
+        "title": null,
+        "messages": [],
+        "id": 4
+    },
+    {
+        "participants": [
+            2,
+            11
+        ],
+        "created_by": 11,
+        "created_at": "2025-11-06T11:53:37+01:00",
+        "updated_at": "2025-11-06T17:26:27+01:00",
+        "last_message_at": "2025-11-06T17:26:27+01:00",
+        "title": null,
+        "messages": [
+            {
+                "id": 1,
+                "sender_id": 11,
+                "content": "Glblbl",
+                "created_at": "2025-11-06T11:53:41+01:00"
+            },
+            {
+                "id": 2,
+                "sender_id": 11,
+                "content": "Le site fonctionne bien, juste un petit problème de cadrage des notifications sur téléphone",
+                "created_at": "2025-11-06T11:54:00+01:00"
+            },
+            {
+                "id": 3,
+                "sender_id": 11,
+                "content": "Je t'envoie un screen sur insta",
+                "created_at": "2025-11-06T11:54:10+01:00"
+            },
+            {
+                "id": 4,
+                "sender_id": 2,
+                "content": "Oki doki",
+                "created_at": "2025-11-06T11:54:38+01:00"
+            },
+            {
+                "id": 5,
+                "sender_id": 11,
+                "content": "J'ai fais mon petit profil normalement j'ai essayé les fonctionnalités et ça fonctionne 🥰",
+                "created_at": "2025-11-06T11:55:11+01:00"
+            },
+            {
+                "id": 6,
+                "sender_id": 11,
+                "content": "Tu as trop bien fais ça",
+                "created_at": "2025-11-06T11:55:19+01:00"
+            },
+            {
+                "id": 7,
+                "sender_id": 2,
+                "content": "Grrrr 😏😏",
+                "created_at": "2025-11-06T11:56:17+01:00"
+            },
+            {
+                "id": 8,
+                "sender_id": 2,
+                "content": "",
+                "created_at": "2025-11-06T17:26:27+01:00",
+                "attachment": {
+                    "type": "image",
+                    "path": "\/uploads\/chat\/a99ef88751310e16-1762446385.png",
+                    "mime": "image\/png",
+                    "size": 1952314,
+                    "width": 1024,
+                    "height": 1000
+                }
+            }
+        ],
+        "id": 5
+    }
+]
