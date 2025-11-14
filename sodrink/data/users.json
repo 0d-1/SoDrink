@@ -1,0 +1,279 @@
+[
+    {
+        "pseudo": "Sigmanaconda",
+        "prenom": "Odin",
+        "nom": "De Baerdemaker",
+        "pass_hash": "$2y$10$R42uVkT67JJceF.WUgcPhe.qjXFtVWW9Z7J3W\/lVS1VWB.1faNYD6",
+        "instagram": "od1.dbdm",
+        "avatar": "\/sodrink\/public\/uploads\/avatars\/808ca5c8d513f1f6-1754747876.jpg",
+        "role": "user",
+        "created_at": "2025-08-09T12:17:31+02:00",
+        "id": 1,
+        "remember_tokens": [
+            {
+                "selector": "2f378f92aebe3061cc",
+                "token_hash": "24993b2e8616b1e600d1a49f6372304755778606239c714097eece7ee9ef29cd",
+                "expires": "2025-09-14T14:28:00+02:00",
+                "created_at": "2025-08-31T14:28:00+02:00"
+            }
+        ]
+    },
+    {
+        "pseudo": "Sigmadmin",
+        "prenom": "Odin",
+        "nom": "De Baerdemaker",
+        "pass_hash": "$2y$10$fbD4lVsb2y\/i7Y7\/aPyLOOQgLs52sugJBDwJsshHttCNWbs.20dnC",
+        "instagram": "od1.dbdm",
+        "avatar": "\/sodrink\/public\/uploads\/avatars\/4085ce5b7cf47a51-1754835561.jpg",
+        "role": "admin",
+        "created_at": "2025-08-10T16:18:33+02:00",
+        "id": 2,
+        "remember_tokens": [
+            {
+                "selector": "8abd07573b36f4d862",
+                "token_hash": "ee23a840110ae131ba05c59e456d41e750837e9b8ca0180ec851e6cfc8978586",
+                "expires": "2025-09-14T14:28:50+02:00",
+                "created_at": "2025-08-31T14:28:50+02:00"
+            },
+            {
+                "selector": "0ab540792fcf928694",
+                "token_hash": "0b229c10033c47319f43e3498897e44be3bbf697755f55689e2d2b8f950bfc41",
+                "expires": "2025-09-30T21:08:03+02:00",
+                "created_at": "2025-09-16T21:08:03+02:00"
+            },
+            {
+                "selector": "5ec124624e0f1ae251",
+                "token_hash": "293cea96c509f10552dadbd2dcff167ebd12580b548d8481c73d6678f05a75d7",
+                "expires": "2025-09-30T21:10:57+02:00",
+                "created_at": "2025-09-16T21:10:57+02:00"
+            },
+            {
+                "selector": "c3ae869d659423a4ee",
+                "token_hash": "4e0991b4df997fddef436315187a5326b06ebc85714ab0d7661012d3fbc80519",
+                "expires": "2025-11-01T08:47:28+01:00",
+                "created_at": "2025-10-18T09:47:28+02:00"
+            },
+            {
+                "selector": "42ff9de4c154a2d4ce",
+                "token_hash": "53a83583539802534453542fd1909b6fcecdf56896aede1af26e73a4556cb6f5",
+                "expires": "2025-11-19T13:31:13+01:00",
+                "created_at": "2025-11-05T13:31:13+01:00"
+            },
+            {
+                "selector": "1573b640085c206281",
+                "token_hash": "9a4bd339f177f9188f62e78685d405ac0737ae38d844a048b2a8dec70e9af8b9",
+                "expires": "2025-11-20T17:29:09+01:00",
+                "created_at": "2025-11-06T17:29:09+01:00"
+            }
+        ],
+        "bio": "",
+        "website": "https:\/\/voie-du-savoir.go.yj.fr\/",
+        "location": "Namur",
+        "relationship_status": "married",
+        "links": [],
+        "email": "od1.dbdm@gmail.com",
+        "banner": "\/sodrink\/public\/uploads\/banners\/eff89c806ebeea13-1762375028.png"
+    },
+    {
+        "pseudo": "JML",
+        "prenom": "Jean-Marie",
+        "nom": "Lepen",
+        "instagram": "",
+        "pass_hash": "$2y$10$z8ZR2DPHehdFSJ4Q2A.bGO3Qbg8jGXlh.NpbFmsYQaZkJTUYqqCCi",
+        "role": "user",
+        "avatar": null,
+        "created_at": "2025-08-15T08:37:16+02:00",
+        "id": 5
+    },
+    {
+        "pseudo": "Sigmafond",
+        "prenom": "François",
+        "nom": "Dieudonné",
+        "instagram": "",
+        "pass_hash": "$2y$10$zXTe1GlTRqzYdEwysAspXuDwos9ESpLL9KzA.xhA.YasAyI8SnGbC",
+        "role": "user",
+        "avatar": null,
+        "created_at": "2025-09-02T22:47:14+02:00",
+        "remember_tokens": [
+            {
+                "selector": "87211bd6ea8f8cbd9b",
+                "token_hash": "3336e845eb0dc7b292e7d607da977fd2f5b3b6ef8bf982ccb73f1a3896551a48",
+                "expires": "2025-09-16T22:51:50+02:00",
+                "created_at": "2025-09-02T22:51:50+02:00"
+            }
+        ],
+        "id": 7
+    },
+    {
+        "pseudo": "sigmalcoolique",
+        "prenom": "Gilles",
+        "nom": "Devos",
+        "instagram": "devos.gilles",
+        "pass_hash": "$2y$10$0SRO4cz9e2hQysdlsjjYh.n\/4rilCLG9A.mLQ9hBLJylE4fPx4vGa",
+        "role": "user",
+        "avatar": null,
+        "created_at": "2025-09-02T22:57:31+02:00",
+        "remember_tokens": [
+            {
+                "selector": "bfaf05f45acfa2809f",
+                "token_hash": "5eae23681f4bb8e8893ae3d97780f6e71b5a5d0060b601014cd7620176be26ea",
+                "expires": "2025-09-16T22:59:11+02:00",
+                "created_at": "2025-09-02T22:59:11+02:00"
+            }
+        ],
+        "id": 8
+    },
+    {
+        "pseudo": "leonie",
+        "prenom": "Léonie",
+        "nom": "Mailleux",
+        "instagram": "leonie.mllx",
+        "bio": "",
+        "website": null,
+        "location": null,
+        "relationship_status": null,
+        "links": [],
+        "pass_hash": "$2y$10$pBTJMNyAK4.NkC2Cgyu7sOb1d5PGpz8ytsab3ezxJynIBmn57tSmO",
+        "email": null,
+        "google_id": null,
+        "auth_provider": "local",
+        "role": null,
+        "avatar": null,
+        "banner": null,
+        "created_at": "2025-11-05T21:46:08+01:00",
+        "remember_tokens": [],
+        "notification_settings": {
+            "messages": true,
+            "events": true,
+            "gallery": true,
+            "torpille": true,
+            "announcements": true
+        },
+        "id": 9
+    },
+    {
+        "pseudo": "leoniee",
+        "prenom": "Léonie",
+        "nom": "Mailleux",
+        "instagram": null,
+        "bio": "",
+        "website": null,
+        "location": null,
+        "relationship_status": null,
+        "links": [],
+        "pass_hash": "$2y$10$jWhdhdfYSIHf.v0ZT8WbTOwV68aNZ0aKO3mUev2FNSRtjraMscNem",
+        "email": null,
+        "google_id": null,
+        "auth_provider": "local",
+        "role": null,
+        "avatar": null,
+        "banner": null,
+        "created_at": "2025-11-05T21:46:25+01:00",
+        "remember_tokens": [],
+        "notification_settings": {
+            "messages": true,
+            "events": true,
+            "gallery": true,
+            "torpille": true,
+            "announcements": true
+        },
+        "id": 10
+    },
+    {
+        "pseudo": "Sigmoisdemai",
+        "prenom": "Léonie",
+        "nom": "Mailleux",
+        "instagram": "leonie_mllx",
+        "bio": "Glblbl",
+        "website": "https:\/\/fr.wikipedia.org\/wiki\/Guyane",
+        "location": "Louvain-la-Neuve",
+        "relationship_status": "married",
+        "links": [],
+        "pass_hash": "$2y$10$2YYmry1yLKgpdKaK3jdV5.5E7Y\/UnPgYcrYVRzzLSt.DC.p5wS\/ja",
+        "email": null,
+        "google_id": null,
+        "auth_provider": "local",
+        "role": null,
+        "avatar": "\/sodrink\/public\/uploads\/avatars\/6215e6b04f349ccf-1762426248.jpg",
+        "banner": "\/sodrink\/public\/uploads\/banners\/32a8d241423fb11b-1762426335.jpg",
+        "created_at": "2025-11-05T21:47:24+01:00",
+        "remember_tokens": [
+            {
+                "selector": "a6008d9ee22b310422",
+                "token_hash": "44231aee593b0781ca4b4406eaeaf3e341778f1a1ac26b555a659ebbcf0e2540",
+                "expires": "2025-11-20T11:49:53+01:00",
+                "created_at": "2025-11-06T11:49:53+01:00"
+            },
+            {
+                "selector": "fab9f1c6f80d0fdaf0",
+                "token_hash": "eb7fae3f6a36a91aad5617230fec0eaf783319eafdc50e409aaee6ee13b0e2a1",
+                "expires": "2025-11-20T11:51:17+01:00",
+                "created_at": "2025-11-06T11:51:17+01:00"
+            }
+        ],
+        "notification_settings": {
+            "messages": true,
+            "events": true,
+            "gallery": true,
+            "torpille": true,
+            "announcements": true
+        },
+        "id": 11
+    },
+    {
+        "pseudo": "biloute",
+        "prenom": "bi",
+        "nom": "loute",
+        "instagram": null,
+        "bio": "",
+        "website": null,
+        "location": null,
+        "relationship_status": null,
+        "links": [],
+        "pass_hash": "$2y$10$VtF9If3tzs6N1.yavloQj.Ci\/T2jWSDfwgQcbdfMsTzIa6RM483E.",
+        "email": null,
+        "google_id": null,
+        "auth_provider": "local",
+        "role": null,
+        "avatar": null,
+        "banner": null,
+        "created_at": "2025-11-11T10:58:26+01:00",
+        "remember_tokens": [],
+        "notification_settings": {
+            "messages": true,
+            "events": true,
+            "gallery": true,
+            "torpille": true,
+            "announcements": true
+        },
+        "id": 12
+    },
+    {
+        "pseudo": "od1.dbdmgmail.com",
+        "prenom": "Odin",
+        "nom": "De Baerdemaker",
+        "instagram": null,
+        "bio": "",
+        "website": null,
+        "location": null,
+        "relationship_status": null,
+        "links": [],
+        "pass_hash": "$2y$10$eYD.Ae4p2eRnGXlwfJdR1uNYzVgwXP9bQdo3buaEY\/pXTgJsP4JD.",
+        "email": null,
+        "google_id": null,
+        "auth_provider": "local",
+        "role": "user",
+        "avatar": null,
+        "banner": null,
+        "created_at": "2025-11-11T11:26:34+01:00",
+        "remember_tokens": [],
+        "notification_settings": {
+            "messages": true,
+            "events": true,
+            "gallery": true,
+            "torpille": true,
+            "announcements": true
+        },
+        "id": 13
+    }
+]
