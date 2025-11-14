@@ -1,1 +1,21 @@
-[]
+[
+    {
+        "path": "\/sodrink\/public\/uploads\/gallery\/39497e7029ba9a01-1762339037.jpg",
+        "title": "sgfq",
+        "description": "gs",
+        "author_id": 2,
+        "likes": [
+            2
+        ],
+        "comments": [
+            {
+                "id": 1,
+                "user_id": 2,
+                "text": "qg",
+                "created_at": "2025-11-05T11:37:33+01:00"
+            }
+        ],
+        "created_at": "2025-11-05T11:37:17+01:00",
+        "id": 1
+    }
+]
