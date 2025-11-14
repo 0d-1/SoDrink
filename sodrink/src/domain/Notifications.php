@@ -9,11 +9,13 @@ class Notifications
 {
     private const RETENTION_DAYS = 7;
     private const SECONDS_PER_DAY = 86400;
+    private const CACHE_TTL_SECONDS = 2;
 
     private JsonStore $store;
     private Users $users;
     /** @var array<int,array>|null */
     private ?array $cache = null;
+    private int $cacheExpiresAt = 0;
 
     public function __construct(?string $file = null, ?Users $users = null)
     {
@@ -25,6 +27,7 @@ class Notifications
     private function invalidateCache(): void
     {
         $this->cache = null;
+        $this->cacheExpiresAt = 0;
     }
 
     /**
@@ -34,7 +37,7 @@ class Notifications
      */
     private function loadAll(): array
     {
-        if ($this->cache !== null) {
+        if ($this->cache !== null && time() < $this->cacheExpiresAt) {
             return $this->cache;
         }
 
@@ -58,6 +61,7 @@ class Notifications
         }
 
         $this->cache = $kept;
+        $this->cacheExpiresAt = time() + self::CACHE_TTL_SECONDS;
         return $this->cache;
     }
 
