@@ -1,0 +1,479 @@
+[
+    {
+        "user_id": 3,
+        "type": "gallery_like",
+        "message": "Sigmanaconda aime votre photo « Mon orteil ».",
+        "link": "\/sodrink\/public\/#gallery",
+        "read": false,
+        "created_at": "2025-08-12T16:00:01+02:00",
+        "id": 2
+    },
+    {
+        "user_id": 3,
+        "type": "gallery_like",
+        "message": "Sigmanaconda aime votre photo « Mon orteil ».",
+        "link": "\/sodrink\/public\/#gallery",
+        "read": false,
+        "created_at": "2025-08-12T16:00:03+02:00",
+        "id": 3
+    },
+    {
+        "user_id": 3,
+        "type": "admin_broadcast",
+        "message": "test notifications",
+        "link": "",
+        "read": false,
+        "created_at": "2025-08-12T16:20:21+02:00",
+        "id": 10
+    },
+    {
+        "user_id": 4,
+        "type": "admin_broadcast",
+        "message": "test notifications",
+        "link": "",
+        "read": false,
+        "created_at": "2025-08-12T16:20:22+02:00",
+        "id": 11
+    },
+    {
+        "user_id": 3,
+        "type": "event_join",
+        "message": "Sigmadmin participe à votre soirée du 2025-09-15",
+        "link": "\/sodrink\/public\/#section-next-event",
+        "read": false,
+        "created_at": "2025-08-12T16:22:08+02:00",
+        "id": 12
+    },
+    {
+        "user_id": 3,
+        "type": "event_join",
+        "message": "Sigmanaconda participe à votre soirée du 2025-09-15",
+        "link": "\/sodrink\/public\/#section-next-event",
+        "read": false,
+        "created_at": "2025-08-12T16:22:33+02:00",
+        "id": 13
+    },
+    {
+        "user_id": 3,
+        "type": "admin_broadcast",
+        "message": "Ge",
+        "link": "",
+        "read": false,
+        "created_at": "2025-08-12T22:23:56+02:00",
+        "id": 24
+    },
+    {
+        "user_id": 4,
+        "type": "admin_broadcast",
+        "message": "Ge",
+        "link": "",
+        "read": false,
+        "created_at": "2025-08-12T22:23:56+02:00",
+        "id": 25
+    },
+    {
+        "user_id": 3,
+        "type": "admin_broadcast",
+        "message": "Fds",
+        "link": "",
+        "read": false,
+        "created_at": "2025-08-12T22:24:11+02:00",
+        "id": 28
+    },
+    {
+        "user_id": 4,
+        "type": "admin_broadcast",
+        "message": "Fds",
+        "link": "",
+        "read": false,
+        "created_at": "2025-08-12T22:24:11+02:00",
+        "id": 29
+    },
+    {
+        "user_id": 3,
+        "type": "admin_broadcast",
+        "message": "bu",
+        "link": "",
+        "read": false,
+        "created_at": "2025-08-12T22:25:33+02:00",
+        "id": 32
+    },
+    {
+        "user_id": 4,
+        "type": "admin_broadcast",
+        "message": "bu",
+        "link": "",
+        "read": false,
+        "created_at": "2025-08-12T22:25:33+02:00",
+        "id": 33
+    },
+    {
+        "user_id": 3,
+        "type": "admin_broadcast",
+        "message": "gaut",
+        "link": "",
+        "read": false,
+        "created_at": "2025-08-12T22:26:56+02:00",
+        "id": 36
+    },
+    {
+        "user_id": 4,
+        "type": "admin_broadcast",
+        "message": "gaut",
+        "link": "",
+        "read": false,
+        "created_at": "2025-08-12T22:26:56+02:00",
+        "id": 37
+    },
+    {
+        "user_id": 3,
+        "type": "event_join",
+        "message": "JML participe à votre soirée du 2025-09-15",
+        "link": "\/sodrink\/public\/#section-next-event",
+        "read": false,
+        "created_at": "2025-08-15T08:39:47+02:00",
+        "id": 40
+    },
+    {
+        "user_id": 3,
+        "type": "gallery_like",
+        "message": "JML aime votre photo « Mon orteil ».",
+        "link": "\/sodrink\/public\/#gallery",
+        "read": false,
+        "created_at": "2025-08-15T08:40:02+02:00",
+        "id": 43
+    },
+    {
+        "user_id": 3,
+        "type": "gallery_like",
+        "message": "JML aime votre photo « Mon orteil ».",
+        "link": "\/sodrink\/public\/#gallery",
+        "read": false,
+        "created_at": "2025-08-15T08:40:04+02:00",
+        "id": 44
+    },
+    {
+        "user_id": 3,
+        "type": "admin_broadcast",
+        "message": "sh",
+        "link": "",
+        "read": false,
+        "created_at": "2025-08-25T20:26:04+02:00",
+        "id": 47
+    },
+    {
+        "user_id": 4,
+        "type": "admin_broadcast",
+        "message": "sh",
+        "link": "",
+        "read": false,
+        "created_at": "2025-08-25T20:26:04+02:00",
+        "id": 48
+    },
+    {
+        "user_id": 3,
+        "type": "event_join",
+        "message": "Sigmadmin participe à votre soirée du 2025-09-15",
+        "link": "\/sodrink\/public\/#section-next-event",
+        "read": false,
+        "created_at": "2025-08-25T21:12:02+02:00",
+        "id": 52
+    },
+    {
+        "user_id": 3,
+        "type": "event_join",
+        "message": "Sigmadmin participe à votre soirée du 2025-09-15",
+        "link": "\/sodrink\/public\/#section-next-event",
+        "read": false,
+        "created_at": "2025-08-29T16:25:10+02:00",
+        "id": 56
+    },
+    {
+        "user_id": 3,
+        "type": "event_join",
+        "message": "Sigmadmin participe à votre soirée du 2025-09-15",
+        "link": "\/sodrink\/public\/#section-next-event",
+        "read": false,
+        "created_at": "2025-08-31T21:30:56+02:00",
+        "id": 58
+    },
+    {
+        "user_id": 6,
+        "type": "admin_broadcast",
+        "message": "wreljhg",
+        "link": "",
+        "read": false,
+        "created_at": "2025-08-31T21:31:57+02:00",
+        "id": 62
+    },
+    {
+        "user_id": 3,
+        "type": "event_join",
+        "message": "Sigmanaconda participe à votre soirée du 2025-09-15",
+        "link": "\/sodrink\/public\/#section-next-event",
+        "read": false,
+        "created_at": "2025-09-01T20:03:47+02:00",
+        "id": 64
+    },
+    {
+        "user_id": 5,
+        "type": "torpille",
+        "message": "Tu es torpillé(e) !",
+        "link": "\/sodrink\/public\/",
+        "read": false,
+        "created_at": "2025-10-18T09:42:21+02:00",
+        "id": 67
+    },
+    {
+        "user_id": 3,
+        "type": "gallery_deleted",
+        "message": "Votre photo a été supprimée.",
+        "link": "\/sodrink\/public\/#gallery",
+        "read": false,
+        "created_at": "2025-10-18T09:48:48+02:00",
+        "id": 69
+    },
+    {
+        "user_id": 1,
+        "type": "gallery_deleted",
+        "message": "Votre photo a été supprimée.",
+        "link": "\/sodrink\/public\/#gallery",
+        "read": false,
+        "created_at": "2025-10-18T12:30:07+02:00",
+        "id": 71
+    },
+    {
+        "user_id": 3,
+        "type": "gallery_deleted",
+        "message": "Votre photo a été supprimée.",
+        "link": "\/sodrink\/public\/#gallery",
+        "read": false,
+        "created_at": "2025-10-18T12:32:08+02:00",
+        "id": 72
+    },
+    {
+        "user_id": 2,
+        "type": "gallery_created",
+        "message": "Votre photo « sgfq » est publiée.",
+        "link": "\/sodrink\/public\/#gallery",
+        "read": true,
+        "created_at": "2025-11-05T11:37:18+01:00",
+        "id": 80
+    },
+    {
+        "user_id": 5,
+        "type": "torpille",
+        "message": "Tu es torpillé(e) !",
+        "link": "\/sodrink\/public\/",
+        "read": false,
+        "created_at": "2025-11-05T11:40:27+01:00",
+        "id": 81
+    },
+    {
+        "user_id": 2,
+        "type": "event_created",
+        "message": "Votre soirée du 2025-11-13 est publiée.",
+        "link": "\/sodrink\/public\/#section-next-event",
+        "read": true,
+        "created_at": "2025-11-05T11:43:51+01:00",
+        "id": 82
+    },
+    {
+        "user_id": 2,
+        "type": "event_created",
+        "message": "Votre soirée du 2025-11-13 est publiée.",
+        "link": "\/sodrink\/public\/#section-next-event",
+        "read": true,
+        "created_at": "2025-11-05T11:43:52+01:00",
+        "id": 83
+    },
+    {
+        "user_id": 2,
+        "type": "event_deleted",
+        "message": "Votre soirée du 2025-11-13 a été supprimée.",
+        "link": "\/sodrink\/public\/#section-next-event",
+        "read": true,
+        "created_at": "2025-11-05T21:32:59+01:00",
+        "id": 84
+    },
+    {
+        "user_id": 5,
+        "type": "chat_message",
+        "message": "Sigmadmin t'a envoyé un message.",
+        "link": "\/sodrink\/public\/chat.php?conversation=1",
+        "read": false,
+        "created_at": "2025-11-05T21:34:21+01:00",
+        "id": 85
+    },
+    {
+        "user_id": 5,
+        "type": "chat_message",
+        "message": "Sigmadmin t'a envoyé un message.",
+        "link": "\/sodrink\/public\/chat.php?conversation=1",
+        "read": false,
+        "created_at": "2025-11-05T21:35:14+01:00",
+        "id": 86
+    },
+    {
+        "user_id": 1,
+        "type": "admin_broadcast",
+        "message": "maj",
+        "link": "",
+        "read": false,
+        "created_at": "2025-11-05T21:39:02+01:00",
+        "id": 87
+    },
+    {
+        "user_id": 2,
+        "type": "admin_broadcast",
+        "message": "maj",
+        "link": "",
+        "read": true,
+        "created_at": "2025-11-05T21:39:02+01:00",
+        "id": 88
+    },
+    {
+        "user_id": 5,
+        "type": "admin_broadcast",
+        "message": "maj",
+        "link": "",
+        "read": false,
+        "created_at": "2025-11-05T21:39:02+01:00",
+        "id": 89
+    },
+    {
+        "user_id": 7,
+        "type": "admin_broadcast",
+        "message": "maj",
+        "link": "",
+        "read": false,
+        "created_at": "2025-11-05T21:39:03+01:00",
+        "id": 90
+    },
+    {
+        "user_id": 8,
+        "type": "admin_broadcast",
+        "message": "maj",
+        "link": "",
+        "read": false,
+        "created_at": "2025-11-05T21:39:03+01:00",
+        "id": 91
+    },
+    {
+        "user_id": 1,
+        "type": "torpille",
+        "message": "Tu es torpillé(e) !",
+        "link": "\/sodrink\/public\/",
+        "read": false,
+        "created_at": "2025-11-05T21:40:56+01:00",
+        "id": 92
+    },
+    {
+        "user_id": 2,
+        "type": "chat_message",
+        "message": "Sigmanaconda t'a envoyé un message.",
+        "link": "\/sodrink\/public\/chat.php?conversation=2",
+        "read": true,
+        "created_at": "2025-11-05T21:43:05+01:00",
+        "id": 93
+    },
+    {
+        "user_id": 1,
+        "type": "chat_message",
+        "message": "Sigmadmin t'a envoyé un message.",
+        "link": "\/sodrink\/public\/chat.php?conversation=2",
+        "read": false,
+        "created_at": "2025-11-05T21:44:12+01:00",
+        "id": 94
+    },
+    {
+        "user_id": 10,
+        "type": "chat_message",
+        "message": "Sigmadmin t'a envoyé un message.",
+        "link": "\/sodrink\/public\/chat.php?conversation=3",
+        "read": false,
+        "created_at": "2025-11-06T11:52:58+01:00",
+        "id": 95
+    },
+    {
+        "user_id": 2,
+        "type": "chat_message",
+        "message": "Sigmoisdemai t'a envoyé un message.",
+        "link": "\/sodrink\/public\/chat.php?conversation=5",
+        "read": true,
+        "created_at": "2025-11-06T11:53:42+01:00",
+        "id": 96
+    },
+    {
+        "user_id": 2,
+        "type": "chat_message",
+        "message": "Sigmoisdemai t'a envoyé un message.",
+        "link": "\/sodrink\/public\/chat.php?conversation=5",
+        "read": true,
+        "created_at": "2025-11-06T11:54:00+01:00",
+        "id": 97
+    },
+    {
+        "user_id": 2,
+        "type": "chat_message",
+        "message": "Sigmoisdemai t'a envoyé un message.",
+        "link": "\/sodrink\/public\/chat.php?conversation=5",
+        "read": true,
+        "created_at": "2025-11-06T11:54:10+01:00",
+        "id": 98
+    },
+    {
+        "user_id": 11,
+        "type": "chat_message",
+        "message": "Sigmadmin t'a envoyé un message.",
+        "link": "\/sodrink\/public\/chat.php?conversation=5",
+        "read": true,
+        "created_at": "2025-11-06T11:54:39+01:00",
+        "id": 99
+    },
+    {
+        "user_id": 2,
+        "type": "chat_message",
+        "message": "Sigmoisdemai t'a envoyé un message.",
+        "link": "\/sodrink\/public\/chat.php?conversation=5",
+        "read": true,
+        "created_at": "2025-11-06T11:55:11+01:00",
+        "id": 100
+    },
+    {
+        "user_id": 2,
+        "type": "chat_message",
+        "message": "Sigmoisdemai t'a envoyé un message.",
+        "link": "\/sodrink\/public\/chat.php?conversation=5",
+        "read": true,
+        "created_at": "2025-11-06T11:55:19+01:00",
+        "id": 101
+    },
+    {
+        "user_id": 11,
+        "type": "chat_message",
+        "message": "Sigmadmin t'a envoyé un message.",
+        "link": "\/sodrink\/public\/chat.php?conversation=5",
+        "read": false,
+        "created_at": "2025-11-06T11:56:17+01:00",
+        "id": 102
+    },
+    {
+        "user_id": 11,
+        "type": "chat_message",
+        "message": "Sigmadmin t'a envoyé un message.",
+        "link": "\/sodrink\/public\/chat.php?conversation=5",
+        "read": false,
+        "created_at": "2025-11-06T17:26:27+01:00",
+        "id": 103
+    },
+    {
+        "user_id": 2,
+        "type": "event_join",
+        "message": "od1.dbdmgmail.com participe à votre soirée du 2025-11-13",
+        "link": "\/sodrink\/public\/#section-next-event",
+        "read": false,
+        "created_at": "2025-11-11T11:29:56+01:00",
+        "id": 104
+    }
+]
