@@ -1,0 +1,6 @@
+<resources>
+    <color name="md_theme_light_primary">#00696F</color>
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_primaryContainer">#7FF5FF</color>
+    <color name="md_theme_light_onPrimaryContainer">#002022</color>
+</resources>
