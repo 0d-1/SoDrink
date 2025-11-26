@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+# Simplified Gradle wrapper launcher. Generates a helpful message when the
+# binary wrapper jar is missing (it can be regenerated with `gradle wrapper`).
+
+set -e
+APP_BASE_DIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
+WRAPPER_JAR="$APP_BASE_DIR/gradle/wrapper/gradle-wrapper.jar"
+
+if [ ! -f "$WRAPPER_JAR" ]; then
+  echo "gradle-wrapper.jar est manquant. Générez-le via 'gradle wrapper' ou Android Studio."
+  exit 1
+fi
+
+JAVA_OPTS=${JAVA_OPTS:-""}
+GRADLE_OPTS=${GRADLE_OPTS:-""}
+exec java $JAVA_OPTS $GRADLE_OPTS -jar "$WRAPPER_JAR" "$@"
