@@ -5,6 +5,7 @@
         android:allowBackup="true"
         android:icon="@android:drawable/ic_dialog_info"
         android:label="SoDrink"
+        android:usesCleartextTraffic="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.SoDrink">
         <activity
