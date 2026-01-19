@@ -292,6 +292,78 @@ function populateNotifUsers(users){
   `).join('');
 }
 
+function renderAdminNotifTable(items){
+  const tbody = $('#notif-admin-table tbody');
+  const empty = $('#notif-admin-empty');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  if (!items.length){
+    if (empty) empty.textContent = 'Aucune notification trouvée.';
+    return;
+  }
+  if (empty) empty.textContent = '';
+  items.forEach(n => {
+    const user = n.user || {};
+    const link = n.link ? `<a href="${n.link}" target="_blank" rel="noopener">Lien</a>` : '';
+    const message = [n.message, link].filter(Boolean).join(' · ');
+    const status = n.read ? 'Lue' : 'Non lue';
+    const row = h(`<tr>
+      <td>#${n.id}</td>
+      <td>
+        <strong>${user.pseudo || '—'}</strong>
+        <div class="muted">#${user.id || '—'} · ${user.role || 'user'}</div>
+      </td>
+      <td>${message}</td>
+      <td><span style="display:inline-block; padding:.2rem .5rem; border:1px solid var(--border); border-radius:999px">${status}</span></td>
+      <td>${(n.created_at || '').replace('T',' ').slice(0,16)}</td>
+      <td class="inline">
+        <button class="btn btn-sm" data-mark data-id="${n.id}" data-read="${n.read ? '1' : '0'}">
+          ${n.read ? 'Marquer non lue' : 'Marquer lue'}
+        </button>
+        <button class="btn btn-sm danger" data-del data-id="${n.id}">Supprimer</button>
+      </td>
+    </tr>`);
+    tbody.appendChild(row);
+  });
+}
+
+async function loadAdminNotifications(){
+  const tbody = $('#notif-admin-table tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="6" class="muted">Chargement…</td></tr>';
+  try{
+    const { notifications } = await API.get('/api/notifications/admin-manage.php');
+    return notifications || [];
+  }catch(err){
+    tbody.innerHTML = `<tr><td colspan="6" class="muted">Erreur: ${err.message || err}</td></tr>`;
+    return [];
+  }
+}
+
+function applyNotifFilters(items){
+  const search = ($('#notif-search')?.value || '').trim().toLowerCase();
+  const role = $('#notif-filter-role')?.value || '';
+  const readFilter = $('#notif-filter-read')?.value || '';
+
+  return items.filter(n => {
+    const user = n.user || {};
+    if (role && (user.role || 'user') !== role) return false;
+    if (readFilter === 'read' && !n.read) return false;
+    if (readFilter === 'unread' && n.read) return false;
+    if (!search) return true;
+    const haystack = [
+      n.id,
+      n.message,
+      n.type,
+      n.link,
+      user.pseudo,
+      user.nom,
+      user.prenom,
+    ].join(' ').toLowerCase();
+    return haystack.includes(search);
+  });
+}
+
 async function bindNotifTab(){
   const form = $('#form-broadcast');
   if (!form) return;
@@ -337,11 +409,52 @@ async function bindNotifTab(){
       const count = r?.sent_count ?? ids.length;
       alert(`Notification envoyée à ${count} destinataire(s).`);
       form.reset();
-      updateManual();
+      await refreshAdminNotifications();
     }catch(err){
       alert(err.message || err);
     }
   });
+
+  const refreshAdminNotifications = async () => {
+    const items = await loadAdminNotifications();
+    const filtered = applyNotifFilters(items);
+    renderAdminNotifTable(filtered);
+  };
+
+  $('#notif-refresh')?.addEventListener('click', refreshAdminNotifications);
+  ['notif-search','notif-filter-role','notif-filter-read'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', refreshAdminNotifications);
+    document.getElementById(id)?.addEventListener('change', refreshAdminNotifications);
+  });
+
+  $('#notif-admin-table')?.addEventListener('click', async (e)=>{
+    const markBtn = e.target.closest('button[data-mark]');
+    const delBtn = e.target.closest('button[data-del]');
+    if (!markBtn && !delBtn) return;
+    const id = Number((markBtn || delBtn).getAttribute('data-id'));
+    if (!id) return;
+    if (markBtn){
+      const isRead = markBtn.getAttribute('data-read') === '1';
+      try{
+        await API.patch('/api/notifications/admin-manage.php', { id, read: !isRead });
+        await refreshAdminNotifications();
+      }catch(err){
+        alert(err.message || err);
+      }
+    }
+    if (delBtn){
+      const ok = confirm('Supprimer cette notification ?');
+      if (!ok) return;
+      try{
+        await API.del(`/api/notifications/admin-manage.php?id=${id}`);
+        await refreshAdminNotifications();
+      }catch(err){
+        alert(err.message || err);
+      }
+    }
+  });
+
+  await refreshAdminNotifications();
 }
 
 /* ============================== Boot ============================== */

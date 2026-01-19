@@ -174,6 +174,47 @@ include __DIR__ . '/../views/partials/header.php';
           <button class="btn btn-primary" type="submit">Envoyer</button>
         </div>
       </form>
+
+      <div class="card" style="margin-top:1rem">
+        <h3 style="margin-top:0">Historique &amp; gestion</h3>
+        <p class="muted">Filtre les notifications envoyées et marque-les comme lues ou supprime-les.</p>
+        <div class="inline" style="gap:.5rem; align-items:end; flex-wrap:wrap">
+          <label>Recherche
+            <input type="search" id="notif-search" placeholder="Message, pseudo, ID...">
+          </label>
+          <label>Rôle
+            <select id="notif-filter-role">
+              <option value="">(tous)</option>
+              <option value="user">user</option>
+              <option value="admin">admin</option>
+            </select>
+          </label>
+          <label>Statut
+            <select id="notif-filter-read">
+              <option value="">(tous)</option>
+              <option value="unread">Non lues</option>
+              <option value="read">Lues</option>
+            </select>
+          </label>
+          <button class="btn btn-sm" type="button" id="notif-refresh">Rafraîchir</button>
+        </div>
+        <div style="overflow:auto; margin-top:.75rem">
+          <table class="table" id="notif-admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Destinataire</th>
+                <th>Message</th>
+                <th>Statut</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="muted" id="notif-admin-empty" style="margin-top:.5rem"></div>
+      </div>
     </section>
 
   </section>
