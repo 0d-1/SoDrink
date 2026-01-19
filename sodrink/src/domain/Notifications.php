@@ -140,4 +140,35 @@ class Notifications
         $this->store->saveAll($all);
         $this->enforceRetention();
     }
+
+    /** @return array<int,array> */
+    public function listAll(): array
+    {
+        $all = $this->loadAll();
+        usort($all, fn($a, $b) => strcmp((string)($b['created_at'] ?? ''), (string)($a['created_at'] ?? '')));
+        return $all;
+    }
+
+    public function setReadStatus(int $id, bool $read): bool
+    {
+        $n = $this->store->findById($id);
+        if (!$n) {
+            return false;
+        }
+        $n['read'] = $read;
+        $ok = $this->store->updateById($id, $n);
+        if ($ok) {
+            $this->enforceRetention();
+        }
+        return $ok;
+    }
+
+    public function deleteById(int $id): bool
+    {
+        $ok = $this->store->deleteById($id);
+        if ($ok) {
+            $this->enforceRetention();
+        }
+        return $ok;
+    }
 }
