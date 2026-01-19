@@ -49,6 +49,7 @@ const API = (() => {
     get: (url) => request('GET', url),
     post: (url, data) => request('POST', url, data),
     put: (url, data) => request('PUT', url, data),
+    patch: (url, data) => request('PATCH', url, data),
     del: (url, data) => request('DELETE', url, data),
     me: () => request('GET', '/api/users/me.php'),
     postForm,

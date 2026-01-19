@@ -174,6 +174,120 @@ include __DIR__ . '/../views/partials/header.php';
           <button class="btn btn-primary" type="submit">Envoyer</button>
         </div>
       </form>
+
+      <div class="card" style="margin-top:1rem">
+        <h3 style="margin-top:0">Programmer une notification</h3>
+        <p class="muted">Crée une notification planifiée qui sera envoyée par le Raspberry.</p>
+        <form id="form-schedule" class="form" style="display:grid; gap:.6rem">
+          <label>Titre
+            <input type="text" name="title" maxlength="80" required>
+          </label>
+          <label>Message
+            <textarea name="message" rows="3" maxlength="500" required></textarea>
+          </label>
+          <label>Lien (optionnel)
+            <input type="url" name="link" placeholder="<?= WEB_BASE ?>/...">
+          </label>
+          <div class="inline" style="align-items:end">
+            <label>Quand l’envoyer
+              <input type="datetime-local" name="scheduled_for" required>
+            </label>
+            <label>Destinataires
+              <select id="schedule-target" name="target">
+                <option value="all">Tous</option>
+                <option value="users">Users</option>
+                <option value="admins">Admins</option>
+                <option value="custom">Sélection</option>
+              </select>
+            </label>
+          </div>
+          <div class="card" id="schedule-users-card" style="margin-top:.25rem" hidden>
+            <div class="inline" style="align-items:center">
+              <div class="muted" style="flex:1">Sélectionne des utilisateurs</div>
+              <div>
+                <button class="btn btn-sm" type="button" id="schedule-select-all">Tout cocher</button>
+                <button class="btn btn-sm" type="button" id="schedule-unselect-all">Tout décocher</button>
+              </div>
+            </div>
+            <div id="schedule-users-list" style="max-height:240px; overflow:auto; margin-top:.5rem"></div>
+          </div>
+          <div class="inline">
+            <button class="btn btn-primary" type="submit">Planifier</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card" style="margin-top:1rem">
+        <h3 style="margin-top:0">Planifications</h3>
+        <div class="inline" style="gap:.5rem; align-items:end; flex-wrap:wrap">
+          <label>Statut
+            <select id="schedule-filter-status">
+              <option value="">(tous)</option>
+              <option value="pending">En attente</option>
+              <option value="sent">Envoyée</option>
+              <option value="canceled">Annulée</option>
+            </select>
+          </label>
+          <button class="btn btn-sm" type="button" id="schedule-refresh">Rafraîchir</button>
+        </div>
+        <div style="overflow:auto; margin-top:.75rem">
+          <table class="table" id="schedule-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Quand</th>
+                <th>Message</th>
+                <th>Cible</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="muted" id="schedule-empty" style="margin-top:.5rem"></div>
+      </div>
+
+      <div class="card" style="margin-top:1rem">
+        <h3 style="margin-top:0">Historique &amp; gestion</h3>
+        <p class="muted">Filtre les notifications envoyées et marque-les comme lues ou supprime-les.</p>
+        <div class="inline" style="gap:.5rem; align-items:end; flex-wrap:wrap">
+          <label>Recherche
+            <input type="search" id="notif-search" placeholder="Message, pseudo, ID...">
+          </label>
+          <label>Rôle
+            <select id="notif-filter-role">
+              <option value="">(tous)</option>
+              <option value="user">user</option>
+              <option value="admin">admin</option>
+            </select>
+          </label>
+          <label>Statut
+            <select id="notif-filter-read">
+              <option value="">(tous)</option>
+              <option value="unread">Non lues</option>
+              <option value="read">Lues</option>
+            </select>
+          </label>
+          <button class="btn btn-sm" type="button" id="notif-refresh">Rafraîchir</button>
+        </div>
+        <div style="overflow:auto; margin-top:.75rem">
+          <table class="table" id="notif-admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Destinataire</th>
+                <th>Message</th>
+                <th>Statut</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="muted" id="notif-admin-empty" style="margin-top:.5rem"></div>
+      </div>
     </section>
 
   </section>
