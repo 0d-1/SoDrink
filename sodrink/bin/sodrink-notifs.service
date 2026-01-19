@@ -1,0 +1,17 @@
+[Unit]
+Description=SoDrink - Dispatch scheduled notifications
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/SoDrink/sodrink
+ExecStart=/usr/bin/php /home/pi/SoDrink/sodrink/bin/dispatch-scheduled-notifications.php
+Nice=5
+IOSchedulingClass=best-effort
+IOSchedulingPriority=6
+
+[Install]
+WantedBy=multi-user.target
